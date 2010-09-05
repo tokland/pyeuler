@@ -1,0 +1,22 @@
+= Introduction
+
+The Euler Project proposes a bunch mathematical problems to be solved using any programming language. In this poject we will see solutions with Python using purely Functional Programming style. 
+
+http://projecteuler.net/
+
+= On functional programming
+
+If functional programming is an unfamiliar term for you, take a look on these references and discover this exciting paradigm:
+
+http://en.wikipedia.org/wiki/Functional_programming
+http://linuxgazette.net/109/pramode.html
+http://www.ibm.com/developerworks/library/l-prog.html
+http://www.amk.ca/python/writing/functional
+
+= Caveat
+
+Python is not a functional language, so some (many, I am afraid) of the solutions here won't be Pythonic. The fibonacci generator is perhaps the more clear example; while a simple while loop will suffice when using imperative code, we will need to look for functional alternatives. So, if you are learning Python this may be not the best place to start. If you know Python and you want to explore its functional possibilities, it may be interesting.
+
+= How to run
+
+    $ python pyeuler/problems.py 
