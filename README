@@ -1,12 +1,14 @@
 = Introduction
 
-The Euler Project proposes a bunch mathematical problems to be solved using any programming language. In this poject we will see solutions with Python using purely Functional Programming style. 
-
 http://projecteuler.net/
+
+Project Euler is a website dedicated to a series of computational problems intended to be solved with computer programs. The project attracts adults and students interested in mathematics and computer programming. Here we will solve them using Python with purely functional programming style. 
+
+Some people have expressed their concerns about making the results of the Euler Project public. While the risk of having people using them unjustly certainly exists (shame on them), the benefits of sharing knowledge should exceed this inconvenient.
 
 = On functional programming
 
-If functional programming is an unfamiliar term for you, take a look on these references and discover this exciting paradigm:
+If "functional programming" is an unfamiliar term for you, take a look on these references and discover this exciting paradigm:
 
 http://en.wikipedia.org/wiki/Functional_programming
 http://linuxgazette.net/109/pramode.html
@@ -15,8 +17,13 @@ http://www.amk.ca/python/writing/functional
 
 = Caveat
 
-Python is not a functional language, so some (many, I am afraid) of the solutions here won't be Pythonic. The fibonacci generator is perhaps the more clear example; while a simple while loop will suffice when using imperative code, we will need to look for functional alternatives. So, if you are learning Python this may be not the best place to start. If you know Python and you want to explore its functional possibilities, it may be interesting.
+Python is not a purely functional language, so some (many, I am afraid) of these solutions won't be as pythonic as one would like. But this is the challenge: solve the Euler Project problems using pre FP, state variables are absolutely forbidden!
 
-= How to run
+If you are a Python novice this is probably not the best place to start. But if you already are familiar with Python and want to explore its functional possibilities, it may be interesting.
+
+= How to run the problems
 
     $ python pyeuler/problems.py 
+    1: 233168 (ok)
+    2: 4613732 (ok)
+    ...

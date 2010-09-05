@@ -1,9 +1,8 @@
 #!/usr/bin/python
+import inspect
 import sys
 import re
-import inspect
 
-# Usually import * is evil but here the toolset is the core of all problems
 from toolset import *
 
 def problem1():
@@ -22,12 +21,8 @@ def problem2():
 
 ### Main
 
-EXPECTED_RESULTS = {
-    1: 233168,
-    2: 4613732,
-}
-
 def run_problem(problem_number, expected_results):
+    """Run a problem and return True if result is successful."""
     function = globals()["problem%d" % problem_number]
     docstring = inspect.getdoc(function)
     result = function()
@@ -39,8 +34,16 @@ def run_problem(problem_number, expected_results):
     print "%d: %s (%s)" % (problem_number, result, status)
     return (result == expected_result)
 
-def main(args, expected_results):    
-    return (0 if all([run_problem(n, expected_results) for n in expected_results]) else 1)
+def main(args, expected_results):
+    """Run Euler Project problems."""
+    statuses = [run_problem(n, expected_results) for n in expected_results]    
+    return (0 if all(statuses) else 1)
+
+EXPECTED_RESULTS = {
+    1: 233168,
+    2: 4613732,
+}
+
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:], EXPECTED_RESULTS))
