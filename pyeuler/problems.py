@@ -1,49 +1,23 @@
 #!/usr/bin/python
-import inspect
-import sys
-import re
-
 from toolset import *
 
 def problem1():
-    """
-    Add all the natural numbers below one thousand that are multiples of 3 or 5.
-    """ 
+    """Add all the natural numbers below 1000 that are multiples of 3 or 5.""" 
     return sum(x for x in xrange(1, 1000) if x % 3 == 0 or x % 5 == 0)
 
 def problem2():
-    """
-    Find the sum of all the even-valued terms in the Fibonacci sequence which 
-    do not exceed four million.
-    """
+    """Find the sum of all the even-valued terms in the Fibonacci < four million."""
     even_fibonacci = (x for x in fibonacci() if x % 2)
-    return sum(takewhile(lambda x: x < int(4e6), even_fibonacci))
+    return sum(takewhile(lambda x: x < 4e6, even_fibonacci))
+  
+def problem3():
+    """Find the largest prime factor of a composite number."""
+    return max(prime_factors(600851475143))
 
-### Main
-
-def run_problem(problem_number, expected_results):
-    """Run a problem and return True if result is successful."""
-    function = globals()["problem%d" % problem_number]
-    docstring = inspect.getdoc(function)
-    result = function()
-    expected_result = expected_results[problem_number]
-    if result == expected_result: 
-        status = "ok"
-    else:
-        status = "FAIL: expected %d but got %d" % (expected_result, result)
-    print "%d: %s (%s)" % (problem_number, result, status)
-    return (result == expected_result)
-
-def main(args, expected_results):
-    """Run Euler Project problems."""
-    statuses = [run_problem(n, expected_results) for n in expected_results]    
-    return (0 if all(statuses) else 1)
-
-EXPECTED_RESULTS = {
-    1: 233168,
-    2: 4613732,
-}
-
-
-if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:], EXPECTED_RESULTS))
+def problem4():
+    """Find the largest palindrome made from the product of two 3-digit numbers."""
+    # A brute-force solution works fine, but we can simplify it a little bit:
+    # x * y = "abccda" = 100001a + 10010b + 1100c = 11 * (9091a + 910b + 100c)
+    # So at least one of the digits must be multiple of 11. 
+    candidates = (x*y for x in xrange(110, 1000, 11) for y in xrange(x, 1000))
+    return max(ifilter(is_palindromic, candidates))

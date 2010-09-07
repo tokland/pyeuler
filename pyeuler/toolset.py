@@ -3,6 +3,7 @@ import operator
 from itertools import ifilter, ifilterfalse, islice, repeat
 from itertools import count, imap, takewhile, tee, izip
 from itertools import chain, starmap, cycle, dropwhile
+from itertools import product as cartesian_product
 from math import sqrt, log, log10, ceil
 
 def take(n, iterable):
@@ -45,8 +46,8 @@ def icross(*sequences):
                 yield (x,)+y
     else: yield ()
 
-def mul(nums):
-    """Multiply all numbers in nums"""
+def product(nums):
+    """Product of nums"""
     return reduce(operator.mul, nums, 1)
 
 def groups(iterable, n, step):
@@ -109,7 +110,7 @@ def fibonacci():
 
 def factorial(num):
     """Return factorial value of num (num!)"""
-    return mul(xrange(2, num+1))
+    return product(xrange(2, num+1))
 
 def is_integer(x, epsilon=1e-6):
     """Return True if the float x 'seems' an integer"""
@@ -155,7 +156,7 @@ def num2digits(digits, base=10):
 def is_palindromic(num, base=10):
     """Check if 'num' in base 'base' is a palindrome, that's it, if it can be
     read from left to right and right to left being the same number"""
-    digitslst = digsnum(num, base)
+    digitslst = digits2num(num, base)
     return digitslst == list(reversed(digitslst))
 
 def ocurrences(lst, exchange=False):
@@ -169,7 +170,6 @@ def prime_factors(num, factor=2):
         return []
     candidates = chain(xrange(factor, int(sqrt(num))+1), [num])
     next = first(x for x in candidates if (num%x == 0))
-    print [num, next]
     return [next] + prime_factors(num/next, next)
 
 def factorize(num):
@@ -212,7 +212,7 @@ def is_pythagorean((a, b, c)):
 
 def n_combinations(n, k):
     """Combinations of k elements from a group of n"""
-    return mul(xrange(n-k+1, n+1))/factorial(k)
+    return cartesian_product(xrange(n-k+1, n+1)) / factorial(k)
 
 def get_cardinal_name(num):
     """Get cardinal name for number (0 to 1000 only)"""
@@ -230,13 +230,13 @@ def get_cardinal_name(num):
         elif num <= 20:
             s = numbers[num]
         else:
-            a, b = digsnum(num)
+            a, b = digits2num(num)
             s = b and "%s-%s"%(numbers[10*a], numbers[b]) or "%s"%numbers[10*a]
         return " ".join(nonvoid([header, s]))
     if num < 100:
         return get_tens(num)
     elif num < 1000:
-        a, b, c = digsnum(num)
+        a, b, c = digits2num(num)
         tens = get_tens(10*b+c, True)
         return " ".join(nonvoid([numbers[a], "hundred", tens]))
     elif num == 1000:
@@ -246,7 +246,7 @@ def get_cardinal_name(num):
 def get_divisors(num):
     """Get all divisors from num in a list (including 1 and itself)"""
     factors = [[pow(a, c) for c in range(0, b+1)] for a, b in factorize(num)]
-    return sorted(mul(nums) for nums in icross(*factors))
+    return sorted(product(nums) for nums in cartesian_product(*factors))
 
 def amical_numbers(start=1):
     """Generate amical numbers pair from start"""
