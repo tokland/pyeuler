@@ -4,7 +4,7 @@ http://projecteuler.net/
 
 Project Euler is a website dedicated to a series of computational problems intended to be solved with computer programs. The project attracts adults and students interested in mathematics and computer programming. Here we will solve them using Python with purely functional programming style. 
 
-Some people have expressed their concerns about making the results of the Euler Project public. While the risk of having people using them unjustly certainly exists (shame on them), the benefits of sharing knowledge should exceed this inconvenient.
+Some people have expressed their concerns about making the results of the Euler Project public. While the risk of having people using them unjustly certainly exists (shame on them), the benefits of sharing knowledge should exceed this inconvenient.  
 
 = On functional programming
 
@@ -15,15 +15,15 @@ http://linuxgazette.net/109/pramode.html
 http://www.ibm.com/developerworks/library/l-prog.html
 http://www.amk.ca/python/writing/functional
 
-= Caveat
-
 Python is not a purely functional language, so some (many, I am afraid) of these solutions won't be as pythonic as one would like. But this is the challenge: solve the Euler Project problems using pre FP, state variables are absolutely forbidden!
 
 If you are a Python novice this is probably not the best place to start. But if you already are familiar with Python and want to explore its functional possibilities, it may be interesting.
 
-= How to run the problems
+= Run the problems
 
-    $ python pyeuler/problems.py 
+    $ wget http://projecteuler-solutions.googlecode.com/svn/trunk/Solutions.txt
+    
+    $ python pyeuler/problems.py --solutions-file Solutions.txt 
     1: 233168 (ok)
     2: 4613732 (ok)
     ...
