@@ -23,7 +23,7 @@ If you are a Python novice this is probably not the best place to start. But if 
 
     $ wget http://projecteuler-solutions.googlecode.com/svn/trunk/Solutions.txt
     
-    $ python pyeuler/problems.py --solutions-file Solutions.txt 
+    $ python pyeuler/run.py --solutions-file Solutions.txt 
     1: 233168 (ok)
     2: 4613732 (ok)
     ...

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import operator
-from itertools import ifilter, ifilterfalse, islice, repeat
+from itertools import ifilter, ifilterfalse, islice, repeat, groupby
 from itertools import count, imap, takewhile, tee, izip
 from itertools import chain, starmap, cycle, dropwhile
 from itertools import product as cartesian_product
@@ -12,7 +12,7 @@ def take(n, iterable):
 
 def takenth(n, iterable):
     "Returns the nth item"
-    return islice(iterable, n, n+1)
+    return islice(iterable, n, n+1).next()
 
 def first(iterable):
     """Take first element in the iterable"""
@@ -44,7 +44,8 @@ def icross(*sequences):
         for x in sequences[0]:
             for y in icross(*sequences[1:]):
                 yield (x,)+y
-    else: yield ()
+    else: 
+        yield ()
 
 def product(nums):
     """Product of nums"""
@@ -113,7 +114,7 @@ def factorial(num):
     return product(xrange(2, num+1))
 
 def is_integer(x, epsilon=1e-6):
-    """Return True if the float x 'seems' an integer"""
+    """Return True if the float x "seems" an integer"""
     return (abs(round(x) - x) < epsilon)
 
 def is_prime(n):
@@ -128,17 +129,17 @@ def is_prime(n):
 
 def primes(start=2):
     """Generate prime numbers from 'start'"""
-    return ifilter(isprime, count(start))
+    return ifilter(is_prime, count(start))
 
 def primes2():
     """Generate all prime nubers (generator version)"""
     ints = count(2)
     while True:
-	prime = ints.next()
-	yield prime
+        prime = ints.next()
+        yield prime
         def filtpred(v, p=prime):
             return ((v % p) != 0)
-    	ints = ifilter(filtpred, ints)
+        ints = ifilter(filtpred, ints)
 
 def digits2num(num, base=10):
     """Get digits from num in base 'base'"""
@@ -155,37 +156,36 @@ def num2digits(digits, base=10):
 
 def is_palindromic(num, base=10):
     """Check if 'num' in base 'base' is a palindrome, that's it, if it can be
-    read from left to right and right to left being the same number"""
+    read equally from left to right and right to left."""
     digitslst = digits2num(num, base)
     return digitslst == list(reversed(digitslst))
 
-def ocurrences(lst, exchange=False):
-    """Return list with ocurrences of each item in lst"""
-    process = exchange and (lambda (a, b): (b, a)) or identity
-    return [process((item, lst.count(item))) for item in set(lst)]
+def ocurrences(it, exchange=False):
+    """Return dictionary with ocurrences of each item in iterable"""
+    return reduce(lambda oc, x: dict(oc, **{x: oc.get(x, 0) + 1}), it, {})
 
-def prime_factors(num, factor=2):
+def prime_factors(num, start=2):
     """Return all prime factors (ordered) of num in a list"""
-    if num <= 1:
-        return []
-    candidates = chain(xrange(factor, int(sqrt(num))+1), [num])
-    next = first(x for x in candidates if (num%x == 0))
-    return [next] + prime_factors(num/next, next)
+    candidates = xrange(start, int(sqrt(num)) + 1)
+    factor = next((x for x in candidates if (num % x == 0)), None)
+    return ([factor] + prime_factors(num / factor, factor) if factor else [num])
 
 def factorize(num):
     """Factorize a number returning ocurrences of its prime factors"""
-    return ocurrences(list(prime_factors(num)))
-
-def least_common_multiple(nums): 
-    """Return least common multiples of nums"""
-    return reduce(lambda a, b: a * b / greatest_common_divisor(a, b), nums)
+    return ocurrences(prime_factors(num))
 
 def greatest_common_divisor(a, b):
-    """Return greatest common divisor of nums"""
-    if b: 
-        return greatest_common_divisor(b, a % b)
-    return a
-    
+    """Return greatest common divisor of a and b"""
+    return (greatest_common_divisor(b, a % b) if b else a)
+
+def least_common_multiple(a, b): 
+    """Return least common multiples of a and b"""
+    return (a * b) / greatest_common_divisor(a, b)
+
+def least_common_multiple_list(nums): 
+    """Return least common multiples of nums"""
+    return reduce(least_common_multiple, nums)
+
 def triangle_number(x):
     """The nth triangle number is defined as the sum of [1,n] values."""
     return (x*(x+1))/2
@@ -276,7 +276,8 @@ def combinations(lst, k):
         for x in lst:
             for y in combinations(remove_from_sequence(lst, x), k-1):
                 yield (x,)+y
-    else: yield ()
+    else: 
+        yield ()
 
 def get_nth_permutation(n, lst):
     """Get nth element in permutations of elements from lst"""
