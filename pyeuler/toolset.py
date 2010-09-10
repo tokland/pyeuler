@@ -10,7 +10,7 @@ def take(n, iterable):
     """Take first n elements from iterable"""
     return islice(iterable, n)
 
-def takenth(n, iterable):
+def index(n, iterable):
     "Returns the nth item"
     return islice(iterable, n, n+1).next()
 
@@ -20,9 +20,9 @@ def first(iterable):
 
 def last(iterable):
     """Take last element in the iterable"""
-    return reduce(lambda x, y: y, iterable, iter([]))
+    return reduce(lambda x, y: y, iterable)
 
-def takeevery(n, iterable):
+def take_every(n, iterable):
     """Take an element from iterator every n elements"""
     return islice(iterable, 0, None, n)
 
@@ -36,16 +36,7 @@ def no(seq, pred=bool):
 
 def iterlen(it):
     """Return length exhausing an iterator"""
-    return reduce(lambda x, y: x+1, it, 0)
-
-def icross(*sequences):
-    """Cartesian product of sequences (recursive version)"""
-    if sequences:
-        for x in sequences[0]:
-            for y in icross(*sequences[1:]):
-                yield (x,)+y
-    else: 
-        yield ()
+    return sum(1 for _ in it)
 
 def product(nums):
     """Product of nums"""
@@ -53,10 +44,10 @@ def product(nums):
 
 def groups(iterable, n, step):
     """Make groups of 'n' elements from the iterable advancing
-    'step' elements each iteration"""
+    'step' elements on each iteration"""
     itlist = tee(iterable, n)
     onestepit = izip(*(starmap(drop, enumerate(itlist))))
-    return takeevery(step, onestepit)
+    return take_every(step, onestepit)
 
 def flatten(lstlsts):
     """Flatten a list of lists"""
@@ -64,6 +55,7 @@ def flatten(lstlsts):
 
 def ireduce(func, iterable, init=None):
     """Like reduce() but using iterators (also known also scanl)"""
+    # not functional
     if init is None:
         iterable = iter(iterable)
         curr = iterable.next()
@@ -74,18 +66,27 @@ def ireduce(func, iterable, init=None):
         curr = func(curr, x)
         yield curr
 
-def nonvoid(it):
+def compact(it):
     """Filter None values from iterator"""
     return ifilterfalse(lambda x: x is None, it)
 
 def unique(it):
-    """Return items from iterator (ordered not kept)"""
+    """Return items from iterator (order preserved)"""
+    # non-functional 
     seen = set()
     for x in it:
         if x not in seen:
             seen.add(x)
             yield x
 
+def _unique(it):
+    """Return items from iterator (order preserved)"""
+    # functional but slow as hell
+    steps = ireduce(lambda (result, seen), x: ((result, seen) if x in seen 
+        else (result+[x], seen.union(set([x])))), it, ([], set()))
+    lasts = (result[-1:] for (result, seen) in steps)
+    return (m for m, g in groupby(flatten(lasts)))
+        
 def has_different_items(it):
     """Return True if all elements in iterator are different"""
     lst = list(it)
@@ -186,6 +187,10 @@ def least_common_multiple_list(nums):
     """Return least common multiples of nums"""
     return reduce(least_common_multiple, nums)
 
+def transpose(matrix):
+    """Transpose bidimensional matrix."""
+    return zip(*matrix)
+
 def triangle_number(x):
     """The nth triangle number is defined as the sum of [1,n] values."""
     return (x*(x+1))/2
@@ -255,7 +260,7 @@ def amical_numbers(start=1):
         sum1 = sum_proper_divisors(x)
         if x != sum1 and sum_proper_divisors(sum1) == x:
             return x, sum1
-    return takeevery(2, nonvoid(imap(get_amical, count(start))))
+    return take_every(2, nonvoid(imap(get_amical, count(start))))
 
 def check_perfect(num):
     """Return -1 if num is deficient, 0 if perfect, +1 if abundant"""

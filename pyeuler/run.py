@@ -31,15 +31,15 @@ def run_problem(number, function, solutions=None):
     else:
         print "%d: %s" % (number, result)
 
-def parse_solutions(lines, format="^(?P<id>\d+)\.\s+(?P<solution>\w+)$"):
-    """Yield pairs (id, solution) parsing from lines."""
+def parse_solutions(lines, format="^(?P<num>\d+)\.\s+(?P<solution>\w+)$"):
+    """Yield pairs (problem_number, solution) parsing from lines."""
     re_format = re.compile(format)
     for line in lines:
         match = re_format.match(line.rstrip())
         if match:
-            idnum, solution = int(match.group("id")), match.group("solution")
+            num, solution = int(match.group("num")), match.group("solution")
             solution2 = (int(solution) if solution.isdigit() else solution)
-            yield idnum, solution2 
+            yield num, solution2 
 
 def main(args):
     """Run Project Euler problems."""
