@@ -54,18 +54,6 @@ def problem10():
     """Find the sum of all the primes below two million."""
     return sum(takewhile(lambda x: x<2e6, primes()))
 
-def _problem11_without_zeros():
-    """What is the greatest product of four adjacent numbers in any direction 
-    (up, down, left, right, or diagonally) in the 2020 grid?"""
-    grid = [map(int, line.split()) for line in data.problem11.strip().splitlines()]
-    n, k = len(grid), 4
-    pivots1 = [(nr, 0) for nr in xrange(0,n-k+1)] + [(0, nc) for nc in xrange(0,n-k+1)]
-    diagonals1 = ([grid[nr+i][nc+i] for i in xrange(n-nr-nc)] for (nr, nc) in pivots1)
-    pivots2 = [(nr, n-1) for nr in xrange(0,n-k+1)] + [(0, nc) for nc in xrange(k-1,n)]
-    diagonals2 = ([grid[nr+i][nc-i] for i in xrange(nc-nr+1)] for (nr, nc) in pivots2)    
-    grids = [grid, transpose(grid), diagonals1, diagonals2]
-    return max(product(nums) for g in grids for row in g for nums in groups(row, k, 1))
-
 def problem11():
     """What is the greatest product of four adjacent numbers in any direction 
     (up, down, left, right, or diagonally) in the 2020 grid?"""
