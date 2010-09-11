@@ -51,7 +51,7 @@ def groups(iterable, n, step):
 
 def flatten(lstlsts):
     """Flatten a list of lists"""
-    return list(chain(*lstlsts))
+    return list(chain.from_iterable(lstlsts))
 
 def ireduce(func, iterable, init=None):
     """Like reduce() but using iterators (also known also scanl)"""
@@ -81,11 +81,10 @@ def unique(it):
 
 def _unique(it):
     """Return items from iterator (order preserved)"""
-    # functional but slow as hell
-    steps = ireduce(lambda (result, seen), x: ((result, seen) if x in seen 
-        else (result+[x], seen.union(set([x])))), it, ([], set()))
-    lasts = (result[-1:] for (result, seen) in steps)
-    return (m for m, g in groupby(flatten(lasts)))
+    # functional but slow as hell. Just a proof-of-concept, don't use it
+    steps = ireduce(lambda (last, seen), x: ((last, seen) if x in seen 
+      else ([x], seen.union([x]))), it, ([], set()))
+    return (m for (m, g) in groupby(flatten(last for (last, seen) in steps)))
         
 def has_different_items(it):
     """Return True if all elements in iterator are different"""
@@ -119,7 +118,7 @@ def is_integer(x, epsilon=1e-6):
     return (abs(round(x) - x) < epsilon)
 
 def is_prime(n):
-    """Return True if n is a prime number"""
+    """Return True if n is a prime number (1 is not considerd prime)."""
     if n < 3:
         return (n == 2)
     elif n % 2 == 0:
@@ -142,23 +141,22 @@ def primes2():
             return ((v % p) != 0)
         ints = ifilter(filtpred, ints)
 
-def digits2num(num, base=10):
+def digits_from_num(num, base=10):
     """Get digits from num in base 'base'"""
-    @tail_recursive
     def recursive(num, base, current):
         if num < base:
             return current+[num]
         return recursive(num/base, base, current+[num%base])
     return list(reversed(recursive(num, base, [])))
 
-def num2digits(digits, base=10):
+def num_from_digits(digits, base=10):
     """Get digits from num in base 'base'"""
     return sum(x*(base**n) for (n, x) in enumerate(reversed(digits)))
 
 def is_palindromic(num, base=10):
     """Check if 'num' in base 'base' is a palindrome, that's it, if it can be
     read equally from left to right and right to left."""
-    digitslst = digits2num(num, base)
+    digitslst = digits_from_num(num, base)
     return digitslst == list(reversed(digitslst))
 
 def ocurrences(it, exchange=False):
@@ -173,7 +171,7 @@ def prime_factors(num, start=2):
 
 def factorize(num):
     """Factorize a number returning ocurrences of its prime factors"""
-    return ocurrences(prime_factors(num))
+    return ((f, iterlen(group)) for (f, group) in groupby(prime_factors(num)))
 
 def greatest_common_divisor(a, b):
     """Return greatest common divisor of a and b"""
@@ -235,13 +233,13 @@ def get_cardinal_name(num):
         elif num <= 20:
             s = numbers[num]
         else:
-            a, b = digits2num(num)
+            a, b = num_from_digits(num)
             s = b and "%s-%s"%(numbers[10*a], numbers[b]) or "%s"%numbers[10*a]
         return " ".join(nonvoid([header, s]))
     if num < 100:
         return get_tens(num)
     elif num < 1000:
-        a, b, c = digits2num(num)
+        a, b, c = num_from_digits(num)
         tens = get_tens(10*b+c, True)
         return " ".join(nonvoid([numbers[a], "hundred", tens]))
     elif num == 1000:

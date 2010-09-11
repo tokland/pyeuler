@@ -56,10 +56,37 @@ def problem10():
 
 def problem11():
     """What is the greatest product of four adjacent numbers in any direction 
-    (up, down, left, right, or diagonally) in the 2020 grid?"""
-    def _grid_get(g, nr, nc):
-        return (g[nr][nc] if 0 <= nr < len(grid) and 0 <= nc < len(grid[0]) else 0)  
+    (up, down, left, right, or diagonally) in the 20x20 grid?"""
+    def _grid_get(g, nr, nc, sr, sc):
+        return (g[nr][nc] if 0 <= nr < sr and 0 <= nc < sc else 0)
     grid = [map(int, line.split()) for line in data.problem11.strip().splitlines()]
-    diffs = [(0, 1), (1, 0), (1, 1), (1, -1)]
-    return max(product(_grid_get(grid, nr+i*dr, nc+i*dc) for i in range(4)) 
-        for nr in range(len(grid)) for nc in range(len(grid[0])) for (dr, dc) in diffs)
+    diffs = [(0, +1), (+1, 0), (+1, +1), (+1, -1)]
+    sr, sc = len(grid), len(grid[0]),
+    return max(product(_grid_get(grid, nr+i*dr, nc+i*dc, sr, sc) for i in range(4))
+        for nr in range(sr) for nc in range(sc) for (dr, dc) in diffs)
+        
+def problem12():
+    """What is the value of the first triangle number to have over five 
+    hundred divisors?"""
+    def _divisors(n):
+        all_factors = [[f**p for p in range(fp+1)] for (f, fp) in factorize(n)]
+        return (product(ns) for ns in cartesian_product(*all_factors))
+    triangle_numbers = (triangle_number(n) for n in count(1))
+    return first(tn for tn in triangle_numbers if iterlen(_divisors(tn)) > 500)
+
+def problem13():
+    """Work out the first ten digits of the sum of the following one-hundred 
+    50-digit numbers."""
+    numbers = (int(x) for x in data.problem13.strip().splitlines())
+    return int(str(sum(numbers))[:10])
+
+def problem14():
+    """The following iterative sequence is defined for the set of positive 
+    integers: n -> n/2 (n is even), n -> 3n + 1 (n is odd). Which starting 
+    number, under one million, produces the longest chain?"""
+    def _collatz_function(n):
+        return ((3*n + 1) if (n % 2) else (n/2))
+    @memoize
+    def _collatz_series_length(n):
+        return (1+_collatz_series_length(_collatz_function(n)) if n>1 else 0)
+    return max(xrange(1, int(1e6)), key=_collatz_series_length)
