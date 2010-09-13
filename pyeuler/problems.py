@@ -90,3 +90,19 @@ def problem14():
     def _collatz_series_length(n):
         return (1+_collatz_series_length(_collatz_function(n)) if n>1 else 0)
     return max(xrange(1, int(1e6)), key=_collatz_series_length)
+
+def problem15():
+    """How many routes are there through a 20x20 grid?"""
+    # To reach the bottom right corner in a grid of size "n" you need to move
+    # n times down (D) and n times right (R), in any order. So we can just see the 
+    # problem as how to put n D's in a 2*n array (that's a simple permutation),
+    # and fill the rest with R's. So: permutations(2n, n) = 2n!/n!n! = (2n)!/2n! 
+    #   
+    # More generically, this is also a permutation of the multiset {n.D,n.R}:
+    # n!/(n1!*n2!*...nk!) -> (2n)! / n!n! = (2n)!/2n!
+    n = 20
+    return factorial(2*n) / (factorial(n)**2)
+
+def problem16():
+    """What is the sum of the digits of the number 2^1000?"""
+    return sum(digits_from_num(2**1000))

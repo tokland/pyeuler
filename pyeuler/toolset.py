@@ -30,10 +30,6 @@ def drop(n, iterable):
     """Drop n elements from iterable and return the rest"""
     return islice(iterable, n, None)
 
-def no(seq, pred=bool):
-    "Returns True if pred(x) is False for every element in the iterable"
-    return (True not in imap(pred, seq))
-
 def iterlen(it):
     """Return length exhausing an iterator"""
     return sum(1 for _ in it)
@@ -55,7 +51,7 @@ def flatten(lstlsts):
 
 def ireduce(func, iterable, init=None):
     """Like reduce() but using iterators (also known also scanl)"""
-    # not functional
+    # not functional, but no feasible alternative
     if init is None:
         iterable = iter(iterable)
         curr = iterable.next()
@@ -72,7 +68,7 @@ def compact(it):
 
 def unique(it):
     """Return items from iterator (order preserved)"""
-    # non-functional 
+    # not functional, but fastest version 
     seen = set()
     for x in it:
         if x not in seen:
@@ -95,19 +91,24 @@ def remove_from_sequence(sequence, toremove):
     """Remove some elements (given in a scalar or sequence) from sequence"""
     if isinstance(toremove, (list, tuple)):
         condition = operator.contains
-    else: condition = operator.eq
+    else: 
+        condition = operator.eq
     return [x for x in sequence if not condition(toremove, x)]
-
-# Common maths functions
 
 def identity(x):
     """Do nothing and return the variable untouched"""
     return x
 
+def ocurrences(it, exchange=False):
+    """Return dictionary with ocurrences from iterable (can be unsorted)"""
+    return reduce(lambda ocur, x: dict(ocur, **{x: ocur.get(x, 0) + 1}), it, {})
+
+# Common maths functions
+
 def fibonacci():
     """Generate fibonnacci serie"""
     get_next = lambda (a, b), _: (b, a+b)
-    return (b for a, b in ireduce(get_next, count(), (0, 1)))
+    return (b for (a, b) in ireduce(get_next, count(), (0, 1)))
 
 def factorial(num):
     """Return factorial value of num (num!)"""
@@ -158,10 +159,6 @@ def is_palindromic(num, base=10):
     read equally from left to right and right to left."""
     digitslst = digits_from_num(num, base)
     return digitslst == list(reversed(digitslst))
-
-def ocurrences(it, exchange=False):
-    """Return dictionary with ocurrences of each item in iterable"""
-    return reduce(lambda oc, x: dict(oc, **{x: oc.get(x, 0) + 1}), it, {})
 
 def prime_factors(num, start=2):
     """Return all prime factors (ordered) of num in a list"""
@@ -246,11 +243,6 @@ def get_cardinal_name(num):
         return "one thousand"
     raise ValueError, "not supported"
 
-def get_divisors(num):
-    """Get all divisors from num in a list (including 1 and itself)"""
-    factors = [[pow(a, c) for c in range(0, b+1)] for a, b in factorize(num)]
-    return sorted(product(nums) for nums in cartesian_product(*factors))
-
 def amical_numbers(start=1):
     """Generate amical numbers pair from start"""
     def get_amical(x):
@@ -263,24 +255,6 @@ def amical_numbers(start=1):
 def check_perfect(num):
     """Return -1 if num is deficient, 0 if perfect, +1 if abundant"""
     return cmp(sum(get_divisors(num)[:-1]), num)
-
-def permutations(lst):
-    """Return permutations of elements in lst"""
-    if lst:
-        for x in lst:
-            for y in permutations(remove_from_sequence(lst, x)):
-                yield (x,)+y
-    else: 
-        yield ()
-
-def combinations(lst, k):
-    """Return combinations of k elements take from a list"""
-    if lst and k>0:
-        for x in lst:
-            for y in combinations(remove_from_sequence(lst, x), k-1):
-                yield (x,)+y
-    else: 
-        yield ()
 
 def get_nth_permutation(n, lst):
     """Get nth element in permutations of elements from lst"""
@@ -310,9 +284,9 @@ def get_decimals(num, div, current=([], [])):
 
 def is_pandigital(digits, needed=tuple(range(1, 10))):
     """Return True if digits form a pandigital number"""
-    if not digits:
-        return False
-    return (tuple(sorted(digits)) == tuple(needed))
+    return ((tuple(sorted(digits)) == tuple(needed)) if digits else False)
+
+# Decorators
 
 def memoize(f, maxcache=None, cache={}):
     """Decorator to keep a cache of input/output for a given function"""
