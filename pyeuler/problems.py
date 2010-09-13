@@ -21,7 +21,7 @@ def problem4():
     # x*y = "abccda" = 100001a + 10010b + 1100c = 11 * (9091a + 910b + 100c)
     # So at least one of them must be multiple of 11 (let's say it's x) 
     candidates = (x*y for x in xrange(110, 1000, 11) for y in xrange(x, 1000))
-    return max(ifilter(is_palindromic, candidates))
+    return max(x for x in candidates if is_palindromic(x))
 
 def problem5():
     """What is the smallest positive number that is evenly divisible by all of 
@@ -61,7 +61,7 @@ def problem11():
         return (g[nr][nc] if 0 <= nr < sr and 0 <= nc < sc else 0)
     grid = [map(int, line.split()) for line in data.problem11.strip().splitlines()]
     diffs = [(0, +1), (+1, 0), (+1, +1), (+1, -1)]
-    sr, sc = len(grid), len(grid[0]),
+    sr, sc = len(grid), len(grid[0])
     return max(product(_grid_get(grid, nr+i*dr, nc+i*dc, sr, sc) for i in range(4))
         for nr in range(sr) for nc in range(sc) for (dr, dc) in diffs)
         
@@ -93,13 +93,14 @@ def problem14():
 
 def problem15():
     """How many routes are there through a 20x20 grid?"""
-    # To reach the bottom right corner in a grid of size "n" you need to move
-    # n times down (D) and n times right (R), in any order. So we can just see the 
+    # To reach the bottom-right corner in a grid of size n we need to move n times
+    # down (D) and n times right (R), in any order. So we can just see the 
     # problem as how to put n D's in a 2*n array (that's a simple permutation),
-    # and fill the rest with R's. So: permutations(2n, n) = 2n!/n!n! = (2n)!/2n! 
+    # and fill the rest with R's -> permutations(2n, n) = (2n)!/(n!n!) = (2n)!/2n! 
     #   
-    # More generically, this is also a permutation of the multiset {n.D,n.R}:
-    # n!/(n1!*n2!*...nk!) -> (2n)! / n!n! = (2n)!/2n!
+    # More generically, this is also a permutation of the multiset {n.D,n.R},
+    # In a generic multiset: n!/(n1!*n2!*...*nk!) permutations 
+    # Here the total n is in fact 2*n, so: (2n)!/(n!n!) = (2n)!/2n!
     n = 20
     return factorial(2*n) / (factorial(n)**2)
 
