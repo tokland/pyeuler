@@ -38,6 +38,10 @@ def product(nums):
     """Product of nums"""
     return reduce(operator.mul, nums, 1)
 
+def irange(start, end):
+    """Return iterable from integer 'start' to 'end' (both included)."""
+    return take(max(end-start+1, 0), count(start))
+
 def groups(iterable, n, step):
     """Make groups of 'n' elements from the iterable advancing
     'step' elements on each iteration"""
@@ -64,7 +68,7 @@ def ireduce(func, iterable, init=None):
 
 def compact(it):
     """Filter None values from iterator"""
-    return ifilterfalse(lambda x: x is None, it)
+    return ifilter(bool, it)
 
 def unique(it):
     """Return items from iterator (order preserved)"""
@@ -222,26 +226,29 @@ def get_cardinal_name(num):
         11: "eleven", 12: "twelve", 13: "thirteen", 14: "fourteen",
         15: "fifteen", 16: "sixteen", 17: "seventeen", 18: "eighteen",
         19: "nineteen", 20: "twenty", 30: "thirty", 40: "forty",
-        50: "fifty", 60: "sixty", 70: "seventy", 80: "eighty", 90: "ninety"}
-    def get_tens(num, withand=False):
-        header = (withand and num) and "and" or None
-        if num == 0 and withand:
-            return
-        elif num <= 20:
-            s = numbers[num]
-        else:
-            a, b = num_from_digits(num)
-            s = b and "%s-%s"%(numbers[10*a], numbers[b]) or "%s"%numbers[10*a]
-        return " ".join(nonvoid([header, s]))
-    if num < 100:
-        return get_tens(num)
-    elif num < 1000:
-        a, b, c = num_from_digits(num)
-        tens = get_tens(10*b+c, True)
-        return " ".join(nonvoid([numbers[a], "hundred", tens]))
-    elif num == 1000:
-        return "one thousand"
-    raise ValueError, "not supported"
+        50: "fifty", 60: "sixty", 70: "seventy", 80: "eighty", 90: "ninety",
+      }
+    # This needs some refactoring
+    if not (0 <= num < 1e6):
+      raise ValueError, "value not supported: %s" % num
+    def _get_tens(n):
+      a, b = divmod(n, 10)
+      return (numbers[n] if (n in numbers) else "%s-%s" % (numbers[10*a], numbers[b]))    
+    def _get_hundreds(n):
+      tens = n % 100
+      hundreds = (n / 100) % 10
+      return list(compact([
+        hundreds > 0 and numbers[hundreds], 
+        hundreds > 0 and "hundred", 
+        hundreds > 0 and tens and "and", 
+        (not hundreds or tens > 0) and _get_tens(tens),
+      ]))
+    thousands = (num / 1000) % 1000
+    strings = compact([
+      thousands and (_get_hundreds(thousands) + ["thousand"]),
+      (num % 1000 or not thousands) and _get_hundreds(num % 1000),
+    ])
+    return " ".join(flatten(strings))
 
 def amical_numbers(start=1):
     """Generate amical numbers pair from start"""

@@ -99,11 +99,49 @@ def problem15():
     # and fill the rest with R's -> permutations(2n, n) = (2n)!/(n!n!) = (2n)!/2n! 
     #   
     # More generically, this is also a permutation of the multiset {n.D,n.R},
-    # In a generic multiset: n!/(n1!*n2!*...*nk!) permutations 
-    # Here the total n is in fact 2*n, so: (2n)!/(n!n!) = (2n)!/2n!
+    # which has n!/(n1!*n2!*...*nk!) permutations. 
+    # Be aware that n is in our problem 2n, so: (2n)!/(n!n!) = (2n)!/2n!
     n = 20
     return factorial(2*n) / (factorial(n)**2)
 
 def problem16():
     """What is the sum of the digits of the number 2^1000?"""
     return sum(digits_from_num(2**1000))
+
+def problem17():
+    """If all the numbers from 1 to 1000 (one thousand) inclusive were written 
+    out in words, how many letters would be used?"""
+    strings = (get_cardinal_name(n) for n in xrange(1, 1000+1))
+    return iterlen(c for c in flatten(strings) if c.isalpha())
+
+def problem18():
+    """Find the maximum total from top to bottom of the triangle below:"""
+    # The note that go with the problem warns that number 67 presents the same
+    # challenge but much bigger, where it won't be possible to solve it using 
+    # simple brute force. But let's do a brain-dead brute-force here and 
+    # we'll use the head later. We test all routes from the top of the triangle.
+    def _get_numbers(rows):
+        """Yield groups of "columns" numbers, following all possible ways."""
+        for moves in cartesian_product([0, +1], repeat=len(rows)-1):
+            indexes = ireduce(operator.add, moves, 0)
+            yield (row[index] for (row, index) in izip(rows, indexes))
+    rows = [map(int, line.split()) for line in data.problem18.strip().splitlines()]     
+    return max(sum(numbers) for numbers in _get_numbers(rows))
+
+def problem19():
+    """How many Sundays fell on the first of the month during the twentieth 
+    century (1 Jan 1901 to 31 Dec 2000)?"""
+    def _is_leap_year(year):
+        return (year%4 == 0 and (year%100 != 0 or year%400 == 0))
+    def _get_days_for_month(month, year):
+        months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        return months[month-1] + (1 if (month == 2 and _is_leap_year(year)) else 0)
+    years_months = ((year, month) for year in xrange(1901, 2001) for month in xrange(1, 12+1))
+    # Skip the last month (including it would make a check for 1 Jan 2001)
+    days = (_get_days_for_month(m, y) for (y, m) in years_months if (y, m) != (2000, 12))
+    # 1 Jan 1901 was a Tuesday -> 5 days to Sunday
+    return sum(1 for x in ireduce(operator.add, days, 0) if (x % 7) == 5)
+
+def problem20():
+    """Find the sum of the digits in the number 100!"""
+    return sum(digits_from_num(factorial(100)))
