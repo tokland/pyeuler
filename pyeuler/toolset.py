@@ -122,8 +122,17 @@ def is_integer(x, epsilon=1e-6):
     """Return True if the float x "seems" an integer"""
     return (abs(round(x) - x) < epsilon)
 
+def divisors(n):
+    """Return all divisors of n: divisors(12) -> [1,2,3,6,12]."""
+    all_factors = [[f**p for p in range(fp+1)] for (f, fp) in factorize(n)]
+    return (product(ns) for ns in cartesian_product(*all_factors))
+
+def proper_divisors(n):
+    """Return all divisors of n except n itself."""
+    return (divisor for divisor in divisors(n) if divisor != n)
+
 def is_prime(n):
-    """Return True if n is a prime number (1 is not considerd prime)."""
+    """Return True if n is a prime number (1 is not considered prime)."""
     if n < 3:
         return (n == 2)
     elif n % 2 == 0:
@@ -172,7 +181,7 @@ def prime_factors(num, start=2):
 
 def factorize(num):
     """Factorize a number returning ocurrences of its prime factors"""
-    return ((f, iterlen(group)) for (f, group) in groupby(prime_factors(num)))
+    return ((factor, iterlen(fs)) for (factor, fs) in groupby(prime_factors(num)))
 
 def greatest_common_divisor(a, b):
     """Return greatest common divisor of a and b"""
@@ -181,10 +190,6 @@ def greatest_common_divisor(a, b):
 def least_common_multiple(a, b): 
     """Return least common multiples of a and b"""
     return (a * b) / greatest_common_divisor(a, b)
-
-def least_common_multiple_list(nums): 
-    """Return least common multiples of nums"""
-    return reduce(least_common_multiple, nums)
 
 def transpose(matrix):
     """Transpose bidimensional matrix."""

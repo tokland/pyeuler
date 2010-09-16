@@ -1,6 +1,10 @@
 #!/usr/bin/python
-from toolset import *
 import data
+import os
+import string
+from toolset import *
+
+datadir = os.path.dirname(__file__)
 
 def problem1():
     """Add all the natural numbers below 1000 that are multiples of 3 or 5.""" 
@@ -17,7 +21,7 @@ def problem3():
 
 def problem4():
     """Find the largest palindrome made from the product of two 3-digit numbers."""
-    # A brute-force solution works fine, but we can simplify it a little bit:
+    # A brute-force solution works somewhat slow, let's try to simplify it a little bit:
     # x*y = "abccda" = 100001a + 10010b + 1100c = 11 * (9091a + 910b + 100c)
     # So at least one of them must be multiple of 11 (let's say it's x) 
     candidates = (x*y for x in xrange(110, 1000, 11) for y in xrange(x, 1000))
@@ -48,7 +52,7 @@ def problem9():
     """There exists exactly one Pythagorean triplet for which a + b + c = 1000.
     Find the product abc."""
     triplets = ((a, b, 1000-a-b) for a in xrange(1, 999) for b in xrange(a+1, 999))
-    return first(a*b*c for (a, b, c) in triplets if a**2+b**2==c**2)
+    return first(a*b*c for (a, b, c) in triplets if a**2 + b**2 == c**2)
   
 def problem10():
     """Find the sum of all the primes below two million."""
@@ -68,11 +72,8 @@ def problem11():
 def problem12():
     """What is the value of the first triangle number to have over five 
     hundred divisors?"""
-    def _divisors(n):
-        all_factors = [[f**p for p in range(fp+1)] for (f, fp) in factorize(n)]
-        return (product(ns) for ns in cartesian_product(*all_factors))
     triangle_numbers = (triangle_number(n) for n in count(1))
-    return first(tn for tn in triangle_numbers if iterlen(_divisors(tn)) > 500)
+    return first(tn for tn in triangle_numbers if iterlen(divisors(tn)) > 500)
 
 def problem13():
     """Work out the first ten digits of the sum of the following one-hundred 
@@ -134,14 +135,27 @@ def problem19():
     def _is_leap_year(year):
         return (year%4 == 0 and (year%100 != 0 or year%400 == 0))
     def _get_days_for_month(month, year):
-        months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-        return months[month-1] + (1 if (month == 2 and _is_leap_year(year)) else 0)
+        days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        return days[month-1] + (1 if (month == 2 and _is_leap_year(year)) else 0)
     years_months = ((year, month) for year in xrange(1901, 2001) for month in xrange(1, 12+1))
     # Skip the last month (including it would make a check for 1 Jan 2001)
     days = (_get_days_for_month(m, y) for (y, m) in years_months if (y, m) != (2000, 12))
-    # 1 Jan 1901 was a Tuesday -> 5 days to Sunday
-    return sum(1 for x in ireduce(operator.add, days, 0) if (x % 7) == 5)
+    # Let's index Monday to 0 to Sunday to 6. 1 Jan 1901 was a Tuesday (1)
+    return sum(1 for wd in ireduce(lambda wd, n: (wd+n) % 7, days, 1) if wd == 6)
 
 def problem20():
     """Find the sum of the digits in the number 100!"""
     return sum(digits_from_num(factorial(100)))
+
+def problem21():
+    """Evaluate the sum of all the amicable numbers under 10000."""
+    sums = dict((n, sum(proper_divisors(n))) for n in xrange(1, 10000))
+    amicables = (a for (a, b) in sums.iteritems() if a != b and b in sums and sums[b] == a)
+    return sum(amicables)
+
+def problem22():
+    """What is the total of all the name scores in the file?"""
+    data = open(os.path.join(datadir, "names.txt")).read()
+    names = sorted(name.strip('"') for name in data.split(","))
+    dictionary = dict((c, n) for (n, c) in enumerate(string.ascii_uppercase, 1))
+    return sum(idx * sum(dictionary[c] for c in name) for (idx, name) in enumerate(names, 1))
