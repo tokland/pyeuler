@@ -3,6 +3,7 @@ import operator
 from itertools import ifilter, ifilterfalse, islice, repeat, groupby
 from itertools import count, imap, takewhile, tee, izip
 from itertools import chain, starmap, cycle, dropwhile
+from itertools import combinations
 from itertools import product as cartesian_product
 from math import sqrt, log, log10, ceil
 
@@ -223,6 +224,15 @@ def n_combinations(n, k):
     """Combinations of k elements from a group of n"""
     return cartesian_product(xrange(n-k+1, n+1)) / factorial(k)
 
+def combinations_with_replacement(iterable, r):
+    """combinations_with_replacement('ABC', 2) --> AA AB AC BB BC CC"""
+    # From http://docs.python.org/library/itertools.html
+    pool = tuple(iterable)
+    n = len(pool)
+    for indices in cartesian_product(range(n), repeat=r):
+        if sorted(indices) == list(indices):
+            yield tuple(pool[i] for i in indices)
+            
 def get_cardinal_name(num):
     """Get cardinal name for number (0 to 1000 only)"""
     numbers = {
@@ -264,9 +274,9 @@ def amical_numbers(start=1):
             return x, sum1
     return take_every(2, nonvoid(imap(get_amical, count(start))))
 
-def check_perfect(num):
-    """Return -1 if num is deficient, 0 if perfect, +1 if abundant"""
-    return cmp(sum(get_divisors(num)[:-1]), num)
+def is_perfect(num):
+    """Return -1 if num is deficient, 0 if perfect, 1 if abundant"""
+    return cmp(sum(proper_divisors(num)), num)
 
 def get_nth_permutation(n, lst):
     """Get nth element in permutations of elements from lst"""

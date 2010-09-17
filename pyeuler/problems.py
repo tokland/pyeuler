@@ -30,7 +30,7 @@ def problem4():
 def problem5():
     """What is the smallest positive number that is evenly divisible by all of 
     the numbers from 1 to 20?."""
-    return reduce(least_common_multiple, range(2, 20+1))
+    return reduce(least_common_multiple, range(1, 20+1))
 
 def problem6():
     """Find the difference between the sum of the squares of the first one 
@@ -64,6 +64,7 @@ def problem11():
     def _grid_get(g, nr, nc, sr, sc):
         return (g[nr][nc] if 0 <= nr < sr and 0 <= nc < sc else 0)
     grid = [map(int, line.split()) for line in data.problem11.strip().splitlines()]
+    # For each cell, get group following 4 directions (E, S, SE, SW)
     diffs = [(0, +1), (+1, 0), (+1, +1), (+1, -1)]
     sr, sc = len(grid), len(grid[0])
     return max(product(_grid_get(grid, nr+i*dr, nc+i*dc, sr, sc) for i in range(4))
@@ -96,12 +97,12 @@ def problem15():
     """How many routes are there through a 20x20 grid?"""
     # To reach the bottom-right corner in a grid of size n we need to move n times
     # down (D) and n times right (R), in any order. So we can just see the 
-    # problem as how to put n D's in a 2*n array (that's a simple permutation),
-    # and fill the rest with R's -> permutations(2n, n) = (2n)!/(n!n!) = (2n)!/2n! 
+    # problem as how to put n D's in a 2*n array (a simple permutation),
+    # and fill the holes with R's -> permutations(2n, n) = (2n)!/(n!n!) = (2n)!/2n! 
     #   
-    # More generically, this is also a permutation of the multiset {n.D,n.R},
-    # which has n!/(n1!*n2!*...*nk!) permutations. 
-    # Be aware that n is in our problem 2n, so: (2n)!/(n!n!) = (2n)!/2n!
+    # More generically, this is also a permutation of a multiset:
+    # which has ntotal!/(n1!*n2!*...*nk!) permutations
+    # In our problem the multiset is {n.D, n.R} -> (2n)!/(n!n!) = (2n)!/2n!
     n = 20
     return factorial(2*n) / (factorial(n)**2)
 
@@ -119,8 +120,8 @@ def problem18():
     """Find the maximum total from top to bottom of the triangle below:"""
     # The note that go with the problem warns that number 67 presents the same
     # challenge but much bigger, where it won't be possible to solve it using 
-    # simple brute force. But let's do a brain-dead brute-force here and 
-    # we'll use the head later. We test all routes from the top of the triangle.
+    # simple brute force. But let's use brute-force here and we'll use the 
+    # head later. We test all routes from the top of the triangle.
     def _get_numbers(rows):
         """Yield groups of "columns" numbers, following all possible ways."""
         for moves in cartesian_product([0, +1], repeat=len(rows)-1):
@@ -138,10 +139,11 @@ def problem19():
         days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
         return days[month-1] + (1 if (month == 2 and _is_leap_year(year)) else 0)
     years_months = ((year, month) for year in xrange(1901, 2001) for month in xrange(1, 12+1))
-    # Skip the last month (including it would make a check for 1 Jan 2001)
+    # Skip the last month (otherwise we would be checking for 1 Jan 2001)
     days = (_get_days_for_month(m, y) for (y, m) in years_months if (y, m) != (2000, 12))
-    # Let's index Monday to 0 to Sunday to 6. 1 Jan 1901 was a Tuesday (1)
-    return sum(1 for wd in ireduce(lambda wd, n: (wd+n) % 7, days, 1) if wd == 6)
+    # Let's index Monday with 0 and Sunday with 6. 1 Jan 1901 was a Tuesday (1)
+    weekday_of_first_day_of_months = ireduce(lambda wd, d: (wd+d) % 7, days, 1)
+    return sum(1 for weekday in weekday_of_first_day_of_months if weekday == 6)
 
 def problem20():
     """Find the sum of the digits in the number 100!"""
@@ -150,12 +152,17 @@ def problem20():
 def problem21():
     """Evaluate the sum of all the amicable numbers under 10000."""
     sums = dict((n, sum(proper_divisors(n))) for n in xrange(1, 10000))
-    amicables = (a for (a, b) in sums.iteritems() if a != b and b in sums and sums[b] == a)
-    return sum(amicables)
+    return sum(a for (a, b) in sums.iteritems() if a != b and sums.get(b, 0) == a)
 
 def problem22():
     """What is the total of all the name scores in the file?"""
     data = open(os.path.join(datadir, "names.txt")).read()
     names = sorted(name.strip('"') for name in data.split(","))
     dictionary = dict((c, n) for (n, c) in enumerate(string.ascii_uppercase, 1))
-    return sum(idx * sum(dictionary[c] for c in name) for (idx, name) in enumerate(names, 1))
+    return sum(i * sum(dictionary[c] for c in name) for (i, name) in enumerate(names, 1))
+
+def problem23():
+    """Find the sum of all the positive integers which cannot be written as 
+    the sum of two abundant numbers."""
+    abundants = set(x for x in xrange(1, 28123+1) if is_perfect(x) == 1)
+    return sum(n for n in xrange(1, 28123+1) if not any((n-a in abundants) for a in abundants))
