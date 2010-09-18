@@ -13,6 +13,7 @@ Website: http://github.com/tokland/pyeuler
 """
 import optparse
 import inspect
+import time
 import sys
 import re
 
@@ -55,8 +56,13 @@ def main(args):
         dict(parse_solutions(open(options.solutions_file))))
     problem_functions = dict((int(re.match("problem(\d+)$", s).group(1)), fun) 
         for (s, fun) in inspect.getmembers(problems) if s.startswith("problem"))
+    itime = time.time()
     statuses = [run_problem(num, fun, solutions) for (num, fun) in 
         sorted(problem_functions.iteritems()) if not tosolve or num in tosolve]
+    elapsed = time.time() - itime
+    ps = "problem" + ("" if len(statuses) == 1 else "s")    
+    print "--- %d %s run (%d ok/ %d failed) in %0.4f seconds" % \
+      (len(statuses), ps, statuses.count(True), statuses.count(False), elapsed) 
     return (0 if all(statuses) else 1)
 
 if __name__ == '__main__':

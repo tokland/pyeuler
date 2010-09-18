@@ -56,7 +56,7 @@ def flatten(lstlsts):
 
 def ireduce(func, iterable, init=None):
     """Like reduce() but using iterators (also known also scanl)"""
-    # not functional, but no feasible alternative
+    # not functional, but there is no feasible alternative other then recursion
     if init is None:
         iterable = iter(iterable)
         curr = iterable.next()
@@ -82,7 +82,7 @@ def unique(it):
 
 def _unique(it):
     """Return items from iterator (order preserved)"""
-    # functional but slow as hell. Just a proof-of-concept, don't use it
+    # functional but slow as hell. Just a proof-of-concept.
     steps = ireduce(lambda (last, seen), x: ((last, seen) if x in seen 
       else ([x], seen.union([x]))), it, ([], set()))
     return (m for (m, g) in groupby(flatten(last for (last, seen) in steps)))
@@ -104,9 +104,9 @@ def identity(x):
     """Do nothing and return the variable untouched"""
     return x
 
-def ocurrences(it, exchange=False):
-    """Return dictionary with ocurrences from iterable (can be unsorted)"""
-    return reduce(lambda ocur, x: dict(ocur, **{x: ocur.get(x, 0) + 1}), it, {})
+def occurrences(it, exchange=False):
+    """Return dictionary with occurrences from iterable (can be unsorted)"""
+    return reduce(lambda occur, x: dict(occur, **{x: occur.get(x, 0) + 1}), it, {})
 
 # Common maths functions
 
@@ -181,7 +181,7 @@ def prime_factors(num, start=2):
     return ([factor] + prime_factors(num / factor, factor) if factor else [num])
 
 def factorize(num):
-    """Factorize a number returning ocurrences of its prime factors"""
+    """Factorize a number returning occurrences of its prime factors"""
     return ((factor, iterlen(fs)) for (factor, fs) in groupby(prime_factors(num)))
 
 def greatest_common_divisor(a, b):

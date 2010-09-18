@@ -174,4 +174,4 @@ def problem24():
 def problem25():
     """What is the first term in the Fibonacci sequence to contain 1000 digits?"""
     # See relation between Fibanacci and the golden-ratio for a smarter solution
-    return first(idx for (idx, x) in enumerate(fibonacci(), 1) if log10(x) >= 1000-1)
+    return first(idx for (idx, x) in enumerate(fibonacci(), 1) if x > 10**(1000-1))
