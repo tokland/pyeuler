@@ -1,17 +1,16 @@
 #!/usr/bin/python
-import data
 import os
 import string
-from toolset import *
 
-datadir = os.path.dirname(__file__)
+import data
+from toolset import *
 
 def problem1():
     """Add all the natural numbers below 1000 that are multiples of 3 or 5.""" 
     return sum(x for x in xrange(1, 1000) if x % 3 == 0 or x % 5 == 0)
 
 def problem2():
-    """Find the sum of all the even-valued terms in the Fibonacci < four million."""
+    """Find the sum of all the even-valued terms in the Fibonacci < 4 million."""
     even_fibonacci = (x for x in fibonacci() if x % 2)
     return sum(takewhile(lambda x: x < 4e6, even_fibonacci))
   
@@ -156,8 +155,8 @@ def problem21():
 
 def problem22():
     """What is the total of all the name scores in the file?"""
-    data = open(os.path.join(datadir, "names.txt")).read()
-    names = sorted(name.strip('"') for name in data.split(","))
+    contents = data.openfile("names.txt").read()
+    names = sorted(name.strip('"') for name in contents.split(","))
     dictionary = dict((c, n) for (n, c) in enumerate(string.ascii_uppercase, 1))
     return sum(i * sum(dictionary[c] for c in name) for (i, name) in enumerate(names, 1))
 
@@ -174,5 +173,5 @@ def problem24():
 
 def problem25():
     """What is the first term in the Fibonacci sequence to contain 1000 digits?"""
-    # Brute-force. See the relation with the golden-ratio for a smarter solution
+    # See relation between Fibanacci and the golden-ratio for a smarter solution
     return first(idx for (idx, x) in enumerate(fibonacci(), 1) if log10(x) >= 1000-1)
