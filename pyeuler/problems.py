@@ -174,4 +174,5 @@ def problem24():
 
 def problem25():
     """What is the first term in the Fibonacci sequence to contain 1000 digits?"""
-    return first(index for (index, x) in enumerate(fibonacci(), 1) if log10(x) >= 1000-1)
+    # Brute-force. See the relation with the golden-ratio for a smarter solution
+    return first(idx for (idx, x) in enumerate(fibonacci(), 1) if log10(x) >= 1000-1)
