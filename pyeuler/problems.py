@@ -64,7 +64,7 @@ def problem11():
     def _grid_get(g, nr, nc, sr, sc):
         return (g[nr][nc] if 0 <= nr < sr and 0 <= nc < sc else 0)
     grid = [map(int, line.split()) for line in data.problem11.strip().splitlines()]
-    # For each cell, get group following 4 directions (E, S, SE, SW)
+    # For each cell, get 4 groups in directions E, S, SE, SW
     diffs = [(0, +1), (+1, 0), (+1, +1), (+1, -1)]
     sr, sc = len(grid), len(grid[0])
     return max(product(_grid_get(grid, nr+i*dr, nc+i*dc, sr, sc) for i in range(4))
@@ -165,4 +165,9 @@ def problem23():
     """Find the sum of all the positive integers which cannot be written as 
     the sum of two abundant numbers."""
     abundants = set(x for x in xrange(1, 28123+1) if is_perfect(x) == 1)
-    return sum(n for n in xrange(1, 28123+1) if not any((n-a in abundants) for a in abundants))
+    return sum(x for x in xrange(1, 28123+1) if not any((x-a in abundants) for a in abundants))
+
+def problem24():
+    """What is the millionth lexicographic permutation of the digits 
+    0, 1, 2, 3, 4, 5, 6, 7, 8 and 9?"""
+    return num_from_digits(index(int(1e6)-1, permutations(range(10), 10)))

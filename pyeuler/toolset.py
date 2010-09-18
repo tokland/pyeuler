@@ -3,7 +3,7 @@ import operator
 from itertools import ifilter, ifilterfalse, islice, repeat, groupby
 from itertools import count, imap, takewhile, tee, izip
 from itertools import chain, starmap, cycle, dropwhile
-from itertools import combinations
+from itertools import combinations, permutations
 from itertools import product as cartesian_product
 from math import sqrt, log, log10, ceil
 
@@ -324,7 +324,8 @@ def memoize(f, maxcache=None, cache={}):
     return g
 
 class tail_recursive(object):
-    """Michele Simionato's version of a tail recursive decorator.""" 
+    """Tail recursive decorator."""
+    # Michele Simionato's version 
     CONTINUE = object() # sentinel
 
     def __init__(self, func):
