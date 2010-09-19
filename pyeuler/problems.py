@@ -202,6 +202,6 @@ def problem27():
         return n**2 + a*n + b
     def _primes_for_a_b(a_b):        
         return takewhile(is_prime, (_function(n, *a_b) for n in count(0)))
-    # b must be prime (so n=0 can start yielding a prime (b itself))     
-    candidates = cartesian_product(xrange(-1000, 1000), ifilter(is_prime, xrange(1000)))    
+    # b must be prime so n=0 can start yielding a prime (b itself)     
+    candidates = ((a, b) for a in xrange(-1000, 1000) for b in ifilter(is_prime, xrange(1000)))    
     return product(max(candidates, key=compose(iterlen, _primes_for_a_b)))
