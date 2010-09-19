@@ -200,9 +200,15 @@ def problem27():
     values of n, starting with n = 0."""
     def _function(n, a, b):
         return n**2 + a*n + b
-    def _primes_for_a_b(a_b):        
+    def _primes_for_a_b(a_b):
         return takewhile(is_prime, (_function(n, *a_b) for n in count(0)))
-    # b must be prime so n=0 yields a prime (b itself)     
-    b_candidates = filter(is_prime, xrange(1000))
+    # b must be prime so n=0 yields a prime (b itself)
+    b_candidates = list(x for x in xrange(1000) if is_prime(x))
     candidates = ((a, b) for a in xrange(-1000, 1000) for b in b_candidates)    
     return product(max(candidates, key=compose(iterlen, _primes_for_a_b)))
+
+def problem28():
+    """What is the sum of the numbers on the diagonals in a 1001 by 1001 spiral 
+    formed in the same way?"""
+    # 1 + (3+5+7+9) + (13+17+21+25) + ... 
+    return sum(ireduce(operator.add, flatten([n]*4 for n in xrange(2, 1001, 2)), 1))

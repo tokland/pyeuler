@@ -15,7 +15,14 @@ class TestToolset(unittest.TestCase):
         self.assertEqual(index(3, [1,2,3,4]), 4)
         self.assertRaises(StopIteration, index, 0, [])
         self.assertRaises(StopIteration, index, 10, [1,2,3])
-        
+
+    def test_first(self):
+        self.assertEqual(first(iter([1,2,3,4])), 1)
+        self.assertRaises(StopIteration, first, iter([]))    
+
+    def test_last(self):
+        self.assertEqual(last(iter([1,2,3,4])), 4)
+        self.assertRaises(TypeError, last, iter([]))    
 
 if __name__ == '__main__':
     unittest.main()
