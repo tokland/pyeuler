@@ -32,14 +32,14 @@ def run_problem(number, function, solutions=None):
     else:
         print "%d: %s" % (number, result)
 
-def parse_solutions(lines, format="^(?P<num>\d+)\.\s+(?P<solution>\w+)$"):
+def parse_solutions(lines, format="^(?P<num>\d+)\.\s+(?P<solution>\S+)$"):
     """Yield pairs (problem_number, solution) parsing from lines."""
     re_format = re.compile(format)
     for line in lines:
         match = re_format.match(line.rstrip())
         if match:
             num, solution = int(match.group("num")), match.group("solution")
-            solution2 = (int(solution) if solution.isdigit() else solution)
+            solution2 = (int(solution) if re.match("^[\d-]+$", solution) else solution)
             yield num, solution2 
 
 def main(args):

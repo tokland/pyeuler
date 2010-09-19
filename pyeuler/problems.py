@@ -157,7 +157,7 @@ def problem22():
     contents = data.openfile("names.txt").read()
     names = sorted(name.strip('"') for name in contents.split(","))
     dictionary = dict((c, n) for (n, c) in enumerate(string.ascii_uppercase, 1))
-    return sum(i * sum(dictionary[c] for c in name) for (i, name) in enumerate(names, 1))
+    return sum(i*sum(dictionary[c] for c in name) for (i, name) in enumerate(names, 1))
 
 def problem23():
     """Find the sum of all the positive integers which cannot be written as 
@@ -187,9 +187,21 @@ def problem26():
             elif r in remainders:
                 return (quotients, len(remainders) - remainders.index(r))
             else:       
-                return _recursive(10 * r, denom, quotients + [q], remainders + [r])
+                return _recursive(10*r, denom, quotients + [q], remainders + [r])
         return (num / denom, _recursive(10*(num % denom), denom, [], []))
     # A smarter (and much faster) solution: countdown from 1000 getting cycles' 
-    # length, and break the process when a denominator is lower the the current 
-    # maximum length (since a cycle cannot be larger than the denominator itself)
+    # length, and break when a denominator is lower the the current maximum 
+    # length (since a cycle cannot be larger than the denominator itself).
     return max(xrange(2, 1000), key=lambda d: _division(1, d)[1][1])
+
+def problem27():
+    """Find the product of the coefficients, a and b, for the quadratic 
+    expression that produces the maximum number of primes for consecutive
+    values of n, starting with n = 0."""
+    def _function(n, a, b):
+        return n**2 + a*n + b
+    def _primes_for_a_b(a_b):        
+        return takewhile(is_prime, (_function(n, *a_b) for n in count(0)))
+    # b must be prime (so n=0 can start yielding a prime (b itself))     
+    candidates = cartesian_product(xrange(-1000, 1000), ifilter(is_prime, xrange(1000)))    
+    return product(max(candidates, key=compose(iterlen, _primes_for_a_b)))
