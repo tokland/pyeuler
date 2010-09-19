@@ -272,20 +272,6 @@ def number_of_digits(num, base=10):
     """Return number of digits of num (expressed in base 'base')"""
     return int(log10(num)/log10(base)) + 1
 
-def get_decimals(num, div, current=([], [])):
-    """Return a tuple (integer_part, decimal_part, cycle_length) for num/div"""
-    headtail = lambda lst: (lst[0], lst[1:])
-    memory, values = current
-    if values and num == 0:
-        integer, decimals = headtail(values)
-        return integer, decimals, 0
-    elif num in memory:
-        integer, decimals = headtail(values)
-        lencycle = len(memory) - memory.index(num)
-        return integer, decimals, lencycle
-    a, b = divmod(num, div)
-    return get_decimals(10*b, div, (memory+[num], values+[a]))
-
 def is_pandigital(digits, needed=tuple(range(1, 10))):
     """Return True if digits form a pandigital number"""
     return ((tuple(sorted(digits)) == tuple(needed)) if digits else False)

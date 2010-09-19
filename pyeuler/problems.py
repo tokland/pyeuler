@@ -180,14 +180,16 @@ def problem26():
     cycle in its decimal fraction part."""
     def _division(num, denom):
         """Return (quotient, (decimals, cycle_length)) for num / denom."""
-        def _recursive(num, denom, acc):
-            quotient, remainder = divmod(num, denom)
-            if remainder == 0:
-                return ([q for (q, r) in acc] + [quotient], 0)
-            elif (quotient, remainder) in acc:
-                index_of_repetition = acc.index((quotient, remainder))
-                return ([q for (q, r) in acc], len(acc) - index_of_repetition)
+        def _recursive(num, denom, quotients, remainders):
+            q, r = divmod(num, denom)
+            if r == 0:
+                return (quotients + [q], 0)
+            elif r in remainders:
+                return (quotients, len(remainders) - remainders.index(r))
             else:       
-                return _recursive(10*remainder, denom, acc + [(quotient, remainder)])
-        return (num / denom, _recursive(10*(num % denom), denom, []))
+                return _recursive(10 * r, denom, quotients + [q], remainders + [r])
+        return (num / denom, _recursive(10*(num % denom), denom, [], []))
+    # A smarter (and much faster) solution: countdown from 1000 getting cycles' 
+    # length, and break the process when a denominator is lower the the current 
+    # maximum length (since a cycle cannot be larger than the denominator itself)
     return max(xrange(2, 1000), key=lambda d: _division(1, d)[1][1])
