@@ -1,5 +1,4 @@
 #!/usr/bin/python
-import os
 import string
 
 import data
@@ -20,11 +19,11 @@ def problem3():
 
 def problem4():
     """Find the largest palindrome made from the product of two 3-digit numbers."""
-    # A brute-force solution works somewhat slow, let's try to simplify it a little bit:
+    # A brute-force solution is a bit slow, let's try to simplify it:
     # x*y = "abccda" = 100001a + 10010b + 1100c = 11 * (9091a + 910b + 100c)
     # So at least one of them must be multiple of 11 (let's say it's x) 
     candidates = (x*y for x in xrange(110, 1000, 11) for y in xrange(x, 1000))
-    return max(x for x in candidates if is_palindromic(x))
+    return max(c for c in candidates if is_palindromic(c))
 
 def problem5():
     """What is the smallest positive number that is evenly divisible by all of 
@@ -134,12 +133,12 @@ def problem19():
     century (1 Jan 1901 to 31 Dec 2000)?"""
     def _is_leap_year(year):
         return (year%4 == 0 and (year%100 != 0 or year%400 == 0))
-    def _get_days_for_month(month, year):
+    def _get_days_for_month(year, month):
         days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
         return days[month-1] + (1 if (month == 2 and _is_leap_year(year)) else 0)
     years_months = ((year, month) for year in xrange(1901, 2001) for month in xrange(1, 12+1))
     # Skip the last month (otherwise we would be checking for 1 Jan 2001)
-    days = (_get_days_for_month(m, y) for (y, m) in years_months if (y, m) != (2000, 12))
+    days = (_get_days_for_month(y, m) for (y, m) in years_months if (y, m) != (2000, 12))    
     # Let's index Monday with 0 and Sunday with 6. 1 Jan 1901 was a Tuesday (1)
     weekday_of_first_day_of_months = ireduce(lambda wd, d: (wd+d) % 7, days, 1)
     return sum(1 for weekday in weekday_of_first_day_of_months if weekday == 6)
@@ -174,4 +173,21 @@ def problem24():
 def problem25():
     """What is the first term in the Fibonacci sequence to contain 1000 digits?"""
     # See relation between Fibanacci and the golden-ratio for a smarter solution
-    return first(idx for (idx, x) in enumerate(fibonacci(), 1) if x > 10**(1000-1))
+    return first(idx for (idx, x) in enumerate(fibonacci(), 1) if x >= 10**999)
+
+def problem26():
+    """Find the value of d < 1000 for which 1/d contains the longest recurring 
+    cycle in its decimal fraction part."""
+    def _division(num, denom):
+        """Return (quotient, (decimals, cycle_length)) for num / denom."""
+        def _recursive(num, denom, acc):
+            quotient, remainder = divmod(num, denom)
+            if remainder == 0:
+                return ([q for (q, r) in acc] + [quotient], 0)
+            elif (quotient, remainder) in acc:
+                index_of_repetition = acc.index((quotient, remainder))
+                return ([q for (q, r) in acc], len(acc) - index_of_repetition)
+            else:       
+                return _recursive(10*remainder, denom, acc + [(quotient, remainder)])
+        return (num / denom, _recursive(10*(num % denom), denom, []))
+    return max(xrange(2, 1000), key=lambda d: _division(1, d)[1][1])

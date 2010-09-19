@@ -39,9 +39,13 @@ def product(nums):
     """Product of nums"""
     return reduce(operator.mul, nums, 1)
 
-def irange(start, end):
+def irange(start_or_end, optional_end=None):
     """Return iterable from integer 'start' to 'end' (both included)."""
-    return take(max(end-start+1, 0), count(start))
+    if optional_end is None:
+        start, end = 0, start_or_end
+    else:
+        start, end = start_or_end, optional_end
+    return take(max(end - start + 1, 0), count(start))
 
 def groups(iterable, n, step):
     """Make groups of 'n' elements from the iterable advancing
@@ -54,9 +58,26 @@ def flatten(lstlsts):
     """Flatten a list of lists"""
     return list(chain.from_iterable(lstlsts))
 
+def compact(it):
+    """Filter None values from iterator"""
+    return ifilter(bool, it)
+
+def compose(f, g):
+    """Compose two functions -> compose(f, g)(x) -> f(g(x))"""
+    def _wrapper(*args, **kwargs):
+        return f(g(*args, **kwargs))
+    return _wrapper
+  
+def iterate(func, arg):
+    """After Haskell's iterate: apply function repeatedly."""
+    # not functional
+    while 1:
+        yield arg
+        arg = func(arg)                
+     
 def ireduce(func, iterable, init=None):
     """Like reduce() but using iterators (also known also scanl)"""
-    # not functional, but there is no feasible alternative other then recursion
+    # not functional
     if init is None:
         iterable = iter(iterable)
         curr = iterable.next()
@@ -67,39 +88,22 @@ def ireduce(func, iterable, init=None):
         curr = func(curr, x)
         yield curr
 
-def compact(it):
-    """Filter None values from iterator"""
-    return ifilter(bool, it)
-
 def unique(it):
     """Return items from iterator (order preserved)"""
-    # not functional, but fastest version 
+    # not functional 
     seen = set()
     for x in it:
         if x not in seen:
             seen.add(x)
             yield x
 
-def _unique(it):
+def unique_functional(it):
     """Return items from iterator (order preserved)"""
     # functional but slow as hell. Just a proof-of-concept.
     steps = ireduce(lambda (last, seen), x: ((last, seen) if x in seen 
       else ([x], seen.union([x]))), it, ([], set()))
     return (m for (m, g) in groupby(flatten(last for (last, seen) in steps)))
         
-def has_different_items(it):
-    """Return True if all elements in iterator are different"""
-    lst = list(it)
-    return (len(set(lst)) == len(lst))
-
-def remove_from_sequence(sequence, toremove):
-    """Remove some elements (given in a scalar or sequence) from sequence"""
-    if isinstance(toremove, (list, tuple)):
-        condition = operator.contains
-    else: 
-        condition = operator.eq
-    return [x for x in sequence if not condition(toremove, x)]
-
 def identity(x):
     """Do nothing and return the variable untouched"""
     return x
@@ -143,11 +147,11 @@ def is_prime(n):
     return True
 
 def primes(start=2):
-    """Generate prime numbers from 'start'"""
+    """Yield prime numbers from 'start'"""
     return ifilter(is_prime, count(start))
 
 def primes2():
-    """Generate all prime nubers (generator version)"""
+    """Yield all prime nubers (generator version)"""
     ints = count(2)
     while True:
         prime = ints.next()
@@ -192,10 +196,6 @@ def least_common_multiple(a, b):
     """Return least common multiples of a and b"""
     return (a * b) / greatest_common_divisor(a, b)
 
-def transpose(matrix):
-    """Transpose bidimensional matrix."""
-    return zip(*matrix)
-
 def triangle_number(x):
     """The nth triangle number is defined as the sum of [1,n] values."""
     return (x*(x+1))/2
@@ -226,7 +226,6 @@ def n_combinations(n, k):
 
 def combinations_with_replacement(iterable, r):
     """combinations_with_replacement('ABC', 2) --> AA AB AC BB BC CC"""
-    # From http://docs.python.org/library/itertools.html
     pool = tuple(iterable)
     n = len(pool)
     for indices in cartesian_product(range(n), repeat=r):
@@ -234,7 +233,7 @@ def combinations_with_replacement(iterable, r):
             yield tuple(pool[i] for i in indices)
             
 def get_cardinal_name(num):
-    """Get cardinal name for number (0 to 1000 only)"""
+    """Get cardinal name for number (0 to 1 million)"""
     numbers = {
         0: "zero", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five",
         6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten",
@@ -265,28 +264,11 @@ def get_cardinal_name(num):
     ])
     return " ".join(flatten(strings))
 
-def amical_numbers(start=1):
-    """Generate amical numbers pair from start"""
-    def get_amical(x):
-        sum_proper_divisors = lambda num: sum(get_divisors(num)[:-1])
-        sum1 = sum_proper_divisors(x)
-        if x != sum1 and sum_proper_divisors(sum1) == x:
-            return x, sum1
-    return take_every(2, nonvoid(imap(get_amical, count(start))))
-
 def is_perfect(num):
     """Return -1 if num is deficient, 0 if perfect, 1 if abundant"""
     return cmp(sum(proper_divisors(num)), num)
 
-def get_nth_permutation(n, lst):
-    """Get nth element in permutations of elements from lst"""
-    if not lst:
-        return []
-    div, mod = divmod(n, factorial(len(lst)-1))
-    element = lst[div]
-    return [element]+get_nth_permutation(mod, remove_from_sequence(lst, element))
-
-def n_digits(num, base=10):
+def number_of_digits(num, base=10):
     """Return number of digits of num (expressed in base 'base')"""
     return int(log10(num)/log10(base)) + 1
 
