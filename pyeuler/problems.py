@@ -210,5 +210,5 @@ def problem27():
 def problem28():
     """What is the sum of the numbers on the diagonals in a 1001 by 1001 spiral 
     formed in the same way?"""
-    # 1 + (3+5+7+9) + (13+17+21+25) + ... 
-    return sum(ireduce(operator.add, flatten([n]*4 for n in xrange(2, 1001, 2)), 1))
+    # 1 + (3+5+7+9) + (13+17+21+25) + ...
+    return sum(ireduce(operator.add, flatten(repeat(n, 4) for n in xrange(2, 1001, 2)), 1))
