@@ -62,7 +62,7 @@ def problem11():
     def _grid_get(g, nr, nc, sr, sc):
         return (g[nr][nc] if 0 <= nr < sr and 0 <= nc < sc else 0)
     grid = [map(int, line.split()) for line in data.problem11.strip().splitlines()]
-    # For each cell, get 4 groups in directions E, S, SE, SW
+    # For each cell, get 4 groups in directions E, S, SE and SW
     diffs = [(0, +1), (+1, 0), (+1, +1), (+1, -1)]
     sr, sc = len(grid), len(grid[0])
     return max(product(_grid_get(grid, nr+i*dr, nc+i*dc, sr, sc) for i in range(4))
@@ -172,7 +172,7 @@ def problem24():
 
 def problem25():
     """What is the first term in the Fibonacci sequence to contain 1000 digits?"""
-    # See relation between Fibanacci and the golden-ratio for a smarter solution
+    # See relation between Fibanacci and the golden-ratio for a non brute-force solution
     return first(idx for (idx, x) in enumerate(fibonacci(), 1) if x >= 10**999)
 
 def problem26():
@@ -222,3 +222,25 @@ def problem30():
     powers of their digits."""
     candidates = xrange(2, 6*(9**5))
     return sum(n for n in candidates if sum(x**5 for x in digits_from_num(n)) == n)
+
+def problem31():
+    """How many different ways can 2 pounds be made using any number of coins?"""
+    def _get_combinations(units, maximum):
+        if units:
+            for a in xrange(0, maximum+1, units[0]):
+                for b in _get_combinations(units[1:], maximum - a):
+                   yield (a,) + b
+        else:
+            yield ()
+            
+    coins = [200, 100, 50, 20, 10, 5, 2, 1]                    
+    #return ilen(xs for xs in _get_combinations(coins, 200) if sum(xs) == 200)
+    # let's commit this just for fun (though it's 8 times faster than using recursion!)
+    return sum (1 for a in range(0, 200+1, 200) 
+        for b in range(0, (200-a)+1, 100) 
+        for c in range(0, (200-a-b)+1, 50)
+        for d in range(0, (200-a-b-c)+1, 20)
+        for e in range(0, (200-a-b-c-d)+1, 10)
+        for f in range(0, (200-a-b-c-d-e)+1, 5)
+        for g in range(0, (200-a-b-c-d-e-f)+1, 2)
+        for h in range(0, (200-a-b-c-d-e-f-g)+1, 1) if a+b+c+d+e+f+g+h == 200)
