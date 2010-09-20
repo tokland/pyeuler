@@ -225,13 +225,14 @@ def problem30():
 
 def problem31():
     """How many different ways can 2 pounds be made using any number of coins?"""
-    def _get_combinations(units, maximum):
+    def _get_combinations(units, remaining):
         if units:
-            for a in xrange(0, maximum+1, units[0]):
-                for b in _get_combinations(units[1:], maximum - a):
-                   yield (a,) + b
-        else:
+            for a in xrange(0, remaining + 1, units[0]):
+                for b in _get_combinations(units[1:], remaining - a):
+                   yield (a/units[0],) + b
+        # We could have broken the recursion sooner (when units == [1]), but this 
+        # is more generic (we make no assumption about which coins we are given)
+        elif remaining == 0:
             yield ()            
-    coins = [200, 100, 50, 20, 10, 5, 2, 1]
-    # using a single generator to create the combinations without recursion                    
-    return ilen(xs for xs in _get_combinations(coins, 200) if sum(xs) == 200)
+    coins = [1, 2, 5, 10, 20, 50, 100, 200]
+    return ilen(xs for xs in _get_combinations(list(reversed(coins)), 200))
