@@ -230,5 +230,7 @@ def problem31():
             for a in xrange(0, maximum+1, units[0]):
                 for b in (_get_combinations(units[1:], maximum - a) or ()):
                    yield (a,) + b
+        else:
+            yield ()            
     coins = [200, 100, 50, 20, 10, 5, 2, 1]                    
     return ilen(xs for xs in _get_combinations(coins, 200) if sum(xs) == 200)
