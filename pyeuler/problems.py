@@ -59,8 +59,9 @@ def problem10():
 def problem11():
     """What is the greatest product of four adjacent numbers in any direction 
     (up, down, left, right, or diagonally) in the 20x20 grid?"""
-    def _grid_get(g, nr, nc, sr, sc):
-        return (g[nr][nc] if 0 <= nr < sr and 0 <= nc < sc else 0)
+    def _grid_get(grid, nr, nc, sr, sc):
+        """Return cell for coordinate (nr, nc) is a grid of size (sr, sc).""" 
+        return (grid[nr][nc] if 0 <= nr < sr and 0 <= nc < sc else 0)
     grid = [map(int, line.split()) for line in data.problem11.strip().splitlines()]
     # For each cell, get 4 groups in directions E, S, SE and SW
     diffs = [(0, +1), (+1, 0), (+1, +1), (+1, -1)]
@@ -84,7 +85,7 @@ def problem14():
     """The following iterative sequence is defined for the set of positive 
     integers: n -> n/2 (n is even), n -> 3n + 1 (n is odd). Which starting 
     number, under one million, produces the longest chain?"""
-    def _collatz_function(n):
+    def _collatz_function(n):        
         return ((3*n + 1) if (n % 2) else (n/2))
     @memoize
     def _collatz_series_length(n):
@@ -121,7 +122,7 @@ def problem18():
     # simple brute force. But let's use brute-force here and we'll use the 
     # head later. We test all routes from the top of the triangle.
     def _get_numbers(rows):
-        """Yield groups of "columns" numbers, following all possible ways."""
+        """Return groups of "columns" numbers, following all possible ways."""
         for moves in cartesian_product([0, +1], repeat=len(rows)-1):
             indexes = ireduce(operator.add, moves, 0)
             yield (row[index] for (row, index) in izip(rows, indexes))
@@ -178,16 +179,16 @@ def problem25():
 def problem26():
     """Find the value of d < 1000 for which 1/d contains the longest recurring 
     cycle in its decimal fraction part."""
-    def _division(num, denom):
+    def _division(numerator, denom):
         """Return (quotient, (decimals, cycle_length)) for num / denom."""
-        def _recursive(num, denom, quotients, remainders):
-            q, r = divmod(num, denom)
+        def _recursive(numerator, denominator, quotients, remainders):
+            q, r = divmod(numerator, denominator)
             if r == 0:
                 return (quotients + [q], 0)
             elif r in remainders:
                 return (quotients, len(remainders) - remainders.index(r))
             else:       
-                return _recursive(10*r, denom, quotients + [q], remainders + [r])
+                return _recursive(10*r, denominator, quotients + [q], remainders + [r])
         return (num / denom, _recursive(10*(num % denom), denom, [], []))
     # A smarter (and much faster) solution: countdown from 1000 getting cycles' 
     # length, and break when a denominator is lower the the current maximum 
@@ -226,6 +227,8 @@ def problem30():
 def problem31():
     """How many different ways can 2 pounds be made using any number of coins?"""
     def _get_weights(units, remaining):
+        """Return all weights that sum 'remaining':
+        _get_weigths([4,2,1], 5) -> (0,0,5), (0,1,3), (0,2,1), (1,0,1)"""   
         if len(units) == 1 and remaining % units[0] == 0:
             yield (remaining/units[0],)
         elif units:
