@@ -22,15 +22,17 @@ import problems
 def run_problem(number, function, solutions=None):
     """Run a problem and return True if result is successful."""
     docstring = inspect.getdoc(function)
+    itime = time.time()
     result = function()
+    elapsed = time.time() - itime
     if solutions:
         solution = solutions[number]
         status = ("ok" if result == solution else 
             "FAIL: expected solution is %s" % solution)
-        print "%d: %s (%s)" % (number, result, status)
+        print "%d: %s (%s) in %0.4f seconds" % (number, result, status, elapsed)
         return (result == solution)
     else:
-        print "%d: %s" % (number, result)
+        print "%d: %s in %0.4f seconds" % (number, result, elapsed)
 
 def parse_solutions(lines, format="^(?P<num>\d+)\.\s+(?P<solution>\S+)$"):
     """Yield pairs (problem_number, solution) parsing from lines."""

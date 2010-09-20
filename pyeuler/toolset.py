@@ -31,7 +31,7 @@ def drop(n, iterable):
     """Drop n elements from iterable and return the rest"""
     return islice(iterable, n, None)
 
-def iterlen(it):
+def ilen(it):
     """Return length exhausing an iterator"""
     return sum(1 for _ in it)
 
@@ -186,7 +186,7 @@ def prime_factors(num, start=2):
 
 def factorize(num):
     """Factorize a number returning occurrences of its prime factors"""
-    return ((factor, iterlen(fs)) for (factor, fs) in groupby(prime_factors(num)))
+    return ((factor, ilen(fs)) for (factor, fs) in groupby(prime_factors(num)))
 
 def greatest_common_divisor(a, b):
     """Return greatest common divisor of a and b"""
