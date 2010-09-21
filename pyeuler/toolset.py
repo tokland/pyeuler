@@ -272,9 +272,9 @@ def number_of_digits(num, base=10):
     """Return number of digits of num (expressed in base 'base')"""
     return int(log10(num)/log10(base)) + 1
 
-def is_pandigital(digits, needed=tuple(range(1, 10))):
+def is_pandigital(digits, through=range(1, 10)):
     """Return True if digits form a pandigital number"""
-    return ((tuple(sorted(digits)) == tuple(needed)) if digits else False)
+    return (list(sorted(digits)) == through)
 
 # Decorators
 

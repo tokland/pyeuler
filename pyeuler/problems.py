@@ -238,3 +238,16 @@ def problem31():
                    yield (weight/units[0],) + other_weights
     coins = [1, 2, 5, 10, 20, 50, 100, 200]
     return ilen(_get_weights(sorted(coins, reverse=True), 200))
+
+def problem32():
+    """Find the sum of all products whose multiplicand/multiplier/product 
+    identity can be written as a 1 through 9 pandigital"""
+    def _get_permutation(ndigits):
+        return ((num_from_digits(ds), list(ds)) for ds in permutations(range(1, 10), ndigits))
+    def _get_multiplicands(ndigits1, ndigits2):
+        return cartesian_product(_get_permutation(ndigits1), _get_permutation(ndigits2))
+    # We have two cases in A * B = C: 'a * bcde = fghi' or 'ab * cde = fghi' 
+    # Also, since C has always 4 digits: 1e3 <= A*B < 1e4
+    candidates = chain(_get_multiplicands(1, 4), _get_multiplicands(2, 3))
+    return sum(unique(a*b for ((a, adigits), (b, bdigits)) in candidates 
+        if a*b < 1e4 and is_pandigital(adigits + bdigits + digits_from_num(a*b))))
