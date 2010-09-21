@@ -227,9 +227,10 @@ def problem30():
 def problem31():
     """How many different ways can 2 pounds be made using any number of coins?"""
     def _get_weights(units, remaining):
-        """Return all weights that sum 'remaining':
+        """Return weights that sum 'remaining'. Pass units in descending order.  
         _get_weigths([4,2,1], 5) -> (0,0,5), (0,1,3), (0,2,1), (1,0,1)"""   
         if len(units) == 1 and remaining % units[0] == 0:
+            # Make it generic, do not assume that last unit is 1
             yield (remaining/units[0],)
         elif units:
             for weight in xrange(0, remaining + 1, units[0]):
