@@ -59,14 +59,14 @@ def problem10():
 def problem11():
     """What is the greatest product of four adjacent numbers in any direction 
     (up, down, left, right, or diagonally) in the 20x20 grid?"""
-    def _grid_get(grid, nr, nc, sr, sc):
+    def grid_get(grid, nr, nc, sr, sc):
         """Return cell for coordinate (nr, nc) is a grid of size (sr, sc).""" 
         return (grid[nr][nc] if 0 <= nr < sr and 0 <= nc < sc else 0)
     grid = [map(int, line.split()) for line in data.problem11.strip().splitlines()]
     # For each cell, get 4 groups in directions E, S, SE and SW
     diffs = [(0, +1), (+1, 0), (+1, +1), (+1, -1)]
     sr, sc = len(grid), len(grid[0])
-    return max(product(_grid_get(grid, nr+i*dr, nc+i*dc, sr, sc) for i in range(4))
+    return max(product(grid_get(grid, nr+i*dr, nc+i*dc, sr, sc) for i in range(4))
         for nr in range(sr) for nc in range(sc) for (dr, dc) in diffs)
         
 def problem12():
@@ -85,12 +85,12 @@ def problem14():
     """The following iterative sequence is defined for the set of positive 
     integers: n -> n/2 (n is even), n -> 3n + 1 (n is odd). Which starting 
     number, under one million, produces the longest chain?"""
-    def _collatz_function(n):        
+    def collatz_function(n):        
         return ((3*n + 1) if (n % 2) else (n/2))
     @memoize
-    def _collatz_series_length(n):
-        return (1+_collatz_series_length(_collatz_function(n)) if n>1 else 0)
-    return max(xrange(1, int(1e6)), key=_collatz_series_length)
+    def collatz_series_length(n):
+        return (1 + collatz_series_length(collatz_function(n)) if n>1 else 0)
+    return max(xrange(1, int(1e6)), key=collatz_series_length)
 
 def problem15():
     """How many routes are there through a 20x20 grid?"""
@@ -121,25 +121,25 @@ def problem18():
     # challenge but much bigger, where it won't be possible to solve it using 
     # simple brute force. But let's use brute-force here and we'll use the 
     # head later. We test all routes from the top of the triangle.
-    def _get_numbers(rows):
+    def get_numbers(rows):
         """Return groups of "columns" numbers, following all possible ways."""
         for moves in cartesian_product([0, +1], repeat=len(rows)-1):
             indexes = ireduce(operator.add, moves, 0)
             yield (row[index] for (row, index) in izip(rows, indexes))
     rows = [map(int, line.split()) for line in data.problem18.strip().splitlines()]     
-    return max(sum(numbers) for numbers in _get_numbers(rows))
+    return max(sum(numbers) for numbers in get_numbers(rows))
 
 def problem19():
     """How many Sundays fell on the first of the month during the twentieth 
     century (1 Jan 1901 to 31 Dec 2000)?"""
-    def _is_leap_year(year):
+    def is_leap_year(year):
         return (year%4 == 0 and (year%100 != 0 or year%400 == 0))
-    def _get_days_for_month(year, month):
+    def get_days_for_month(year, month):
         days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-        return days[month-1] + (1 if (month == 2 and _is_leap_year(year)) else 0)
+        return days[month-1] + (1 if (month == 2 and is_leap_year(year)) else 0)
     years_months = ((year, month) for year in xrange(1901, 2001) for month in xrange(1, 12+1))
     # Skip the last month (otherwise we would be checking for 1 Jan 2001)
-    days = (_get_days_for_month(y, m) for (y, m) in years_months if (y, m) != (2000, 12))    
+    days = (get_days_for_month(y, m) for (y, m) in years_months if (y, m) != (2000, 12))    
     # Let's index Monday with 0 and Sunday with 6. 1 Jan 1901 was a Tuesday (1)
     weekday_of_first_day_of_months = ireduce(lambda wd, d: (wd+d) % 7, days, 1)
     return sum(1 for weekday in weekday_of_first_day_of_months if weekday == 6)
@@ -179,34 +179,35 @@ def problem25():
 def problem26():
     """Find the value of d < 1000 for which 1/d contains the longest recurring 
     cycle in its decimal fraction part."""
-    def _division(numerator, denom):
-        """Return (quotient, (decimals, cycle_length)) for num / denom."""
-        def _recursive(numerator, denominator, quotients, remainders):
+    def division(numerator, denominator):
+        """Return (quotient, (decimals, cycle_length)) for numerator / denomominator."""
+        def recursive(numerator, denominator, quotients, remainders):
             q, r = divmod(numerator, denominator)
             if r == 0:
                 return (quotients + [q], 0)
             elif r in remainders:
                 return (quotients, len(remainders) - remainders.index(r))
             else:       
-                return _recursive(10*r, denominator, quotients + [q], remainders + [r])
-        return (num / denom, _recursive(10*(num % denom), denom, [], []))
+                return recursive(10*r, denominator, quotients + [q], remainders + [r])
+        decimals = recursive(10*(numerator % denominator), denominator, [], [])            
+        return (numerator/denominator, decimals)
     # A smarter (and much faster) solution: countdown from 1000 getting cycles' 
     # length, and break when a denominator is lower the the current maximum 
     # length (since a cycle cannot be larger than the denominator itself).
-    return max(xrange(2, 1000), key=lambda d: _division(1, d)[1][1])
+    return max(xrange(2, 1000), key=lambda d: division(1, d)[1][1])
 
 def problem27():
     """Find the product of the coefficients, a and b, for the quadratic 
     expression that produces the maximum number of primes for consecutive
     values of n, starting with n = 0."""
-    def _function(n, a, b):
+    def function(n, a, b):
         return n**2 + a*n + b
-    def _primes_for_a_b(a_b):
-        return takewhile(is_prime, (_function(n, *a_b) for n in count(0)))
+    def primes_for_a_b(a_b):
+        return takewhile(is_prime, (function(n, *a_b) for n in count(0)))
     # b must be prime so n=0 yields a prime (b itself)
     b_candidates = list(x for x in xrange(1000) if is_prime(x))
     candidates = ((a, b) for a in xrange(-1000, 1000) for b in b_candidates)    
-    return product(max(candidates, key=compose(ilen, _primes_for_a_b)))
+    return product(max(candidates, key=compose(ilen, primes_for_a_b)))
 
 def problem28():
     """What is the sum of the numbers on the diagonals in a 1001 by 1001 spiral 
@@ -226,28 +227,28 @@ def problem30():
 
 def problem31():
     """How many different ways can 2 pounds be made using any number of coins?"""
-    def _get_weights(units, remaining):
+    def get_weights(units, remaining):
         """Return weights that sum 'remaining'. Pass units in descending order.  
-        _get_weigths([4,2,1], 5) -> (0,0,5), (0,1,3), (0,2,1), (1,0,1)"""   
+        get_weigths([4,2,1], 5) -> (0,0,5), (0,1,3), (0,2,1), (1,0,1)"""   
         if len(units) == 1 and remaining % units[0] == 0:
             # Make it generic, do not assume that last unit is 1
             yield (remaining/units[0],)
         elif units:
             for weight in xrange(0, remaining + 1, units[0]):
-                for other_weights in _get_weights(units[1:], remaining - weight):
+                for other_weights in get_weights(units[1:], remaining - weight):
                    yield (weight/units[0],) + other_weights
     coins = [1, 2, 5, 10, 20, 50, 100, 200]
-    return ilen(_get_weights(sorted(coins, reverse=True), 200))
+    return ilen(get_weights(sorted(coins, reverse=True), 200))
 
 def problem32():
     """Find the sum of all products whose multiplicand/multiplier/product 
     identity can be written as a 1 through 9 pandigital"""
-    def _get_permutation(ndigits):
+    def get_permutation(ndigits):
         return ((num_from_digits(ds), list(ds)) for ds in permutations(range(1, 10), ndigits))
-    def _get_multiplicands(ndigits1, ndigits2):
-        return cartesian_product(_get_permutation(ndigits1), _get_permutation(ndigits2))
-    # We have two cases in A * B = C: 'a * bcde = fghi' or 'ab * cde = fghi' 
-    # Also, since C has always 4 digits: 1e3 <= A*B < 1e4
-    candidates = chain(_get_multiplicands(1, 4), _get_multiplicands(2, 3))
+    def get_multiplicands(ndigits1, ndigits2):
+        return cartesian_product(get_permutation(ndigits1), get_permutation(ndigits2))
+    # We have two cases for A * B = C: 'a * bcde = fghi' and 'ab * cde = fghi' 
+    # Also, since C has always 4 digits, 1e3 <= A*B < 1e4
+    candidates = chain(get_multiplicands(1, 4), get_multiplicands(2, 3))
     return sum(unique(a*b for ((a, adigits), (b, bdigits)) in candidates 
         if a*b < 1e4 and is_pandigital(adigits + bdigits + digits_from_num(a*b))))

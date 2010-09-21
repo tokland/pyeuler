@@ -24,5 +24,16 @@ class TestToolset(unittest.TestCase):
         self.assertEqual(last(iter([1,2,3,4])), 4)
         self.assertRaises(TypeError, last, iter([]))    
 
+    def test_take_every(self):
+        self.assertEqual(list(take_every(1, [1,2,3,4])), [1,2,3,4])
+        self.assertEqual(list(take_every(2, [1,2,3,4])), [1,3])
+        self.assertEqual(list(take_every(10, [1,2,3,4])), [1])
+        self.assertEqual(list(take_every(1, [])), [])
+
+    def test_drop(self):
+        self.assertEqual(list(drop(0, [1,2,3,4])), [1,2,3,4])
+        self.assertEqual(list(drop(1, [1,2,3,4])), [2,3,4])
+        self.assertEqual(list(drop(10, [1,2,3,4])), [])
+        
 if __name__ == '__main__':
     unittest.main()
