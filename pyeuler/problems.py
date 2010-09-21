@@ -237,4 +237,4 @@ def problem31():
                 for other_weights in _get_weights(units[1:], remaining - weight):
                    yield (weight/units[0],) + other_weights
     coins = [1, 2, 5, 10, 20, 50, 100, 200]
-    return ilen(_get_weights(list(reversed(coins)), 200))
+    return ilen(_get_weights(sorted(coins, reverse=True), 200))
