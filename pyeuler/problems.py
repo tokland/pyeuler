@@ -264,11 +264,12 @@ def problem33():
     def is_curious(numerator, denominator):
         if numerator == denominator or numerator % 10 == 0 or denominator % 10 == 0:
             return False
+        # numerator / denominator = ab / cd
         (a, b), (c, d) = map(digits_from_num, [numerator, denominator])
         reduced = reduce_fraction(numerator, denominator)
         return (b == c and reduce_fraction(a, d) == reduced or 
                 a == d and reduce_fraction(b, c) == reduced) 
-    curious_fractions = list((num, denom) for num in xrange(10, 100) 
+    curious_fractions = ((num, denom) for num in xrange(10, 100) 
         for denom in xrange(num+1, 100) if is_curious(num, denom))
-    product_fraction = map(product, zip(*(curious_fractions)))
+    product_fraction = map(product, zip(*curious_fractions))
     return reduce_fraction(*product_fraction)[1]
