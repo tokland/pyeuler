@@ -252,3 +252,23 @@ def problem32():
     candidates = chain(get_multiplicands(1, 4), get_multiplicands(2, 3))
     return sum(unique(a*b for ((a, adigits), (b, bdigits)) in candidates 
         if a*b < 1e4 and is_pandigital(adigits + bdigits + digits_from_num(a*b))))
+        
+def problem33():
+    """There are exactly four non-trivial examples of this type of fraction, 
+    less than one in value, and containing two digits in the numerator and 
+    denominator. If the product of these four fractions is given in its lowest 
+    common terms, find the value of the denominator."""
+    def reduce_fraction(num, denom):
+        gcd = greatest_common_divisor(num, denom)
+        return (num / gcd, denom / gcd)
+    def is_curious(numerator, denominator):
+        if numerator == denominator or numerator % 10 == 0 or denominator % 10 == 0:
+            return False
+        (a, b), (c, d) = map(digits_from_num, [numerator, denominator])
+        reduced = reduce_fraction(numerator, denominator)
+        return (b == c and reduce_fraction(a, d) == reduced or 
+                a == d and reduce_fraction(b, c) == reduced) 
+    curious_fractions = list((num, denom) for num in xrange(10, 100) 
+        for denom in xrange(num+1, 100) if is_curious(num, denom))
+    product_fraction = map(product, zip(*(curious_fractions)))
+    return reduce_fraction(*product_fraction)[1]
