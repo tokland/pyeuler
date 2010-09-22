@@ -271,5 +271,17 @@ def problem33():
                 a == d and reduce_fraction(b, c) == reduced) 
     curious_fractions = ((num, denom) for num in xrange(10, 100) 
         for denom in xrange(num+1, 100) if is_curious(num, denom))
-    product_fraction = map(product, zip(*curious_fractions))
-    return reduce_fraction(*product_fraction)[1]
+    numerator, denominator = map(product, zip(*curious_fractions))
+    return reduce_fraction(numerator, denominator)[1]
+
+def problem34():
+    """Find the sum of all numbers which are equal to the sum of the factorial 
+    of their digits."""
+    # Cache digits from 0 to 9 to speed it up a little bit
+    dfactorials = dict((x, factorial(x)) for x in xrange(10))
+    # Setting the upper-bound is the point of the problem. A first value is 
+    # ndigits*9! < 10^ndigits, where ndigits*9! is then the upper bound. 
+    # That makes 7*9! = 2540160. That's quite a number, so it will be pretty slow. 
+    upper_bound = first(n*dfactorials[9] for n in count(1) if n*dfactorials[9] < 10**n)
+    return sum(x for x in xrange(3, upper_bound) 
+        if x == sum(dfactorials[d] for d in digits_from_num_fast(x)))

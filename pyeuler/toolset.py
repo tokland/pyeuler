@@ -160,6 +160,10 @@ def primes2():
             return ((v % p) != 0)
         ints = ifilter(filtpred, ints)
 
+def digits_from_num_fast(num):
+    """Get digits from num in base 10 (fast implementation)"""
+    return map(int, str(num))
+
 def digits_from_num(num, base=10):
     """Get digits from num in base 'base'"""
     def recursive(num, base, current):
