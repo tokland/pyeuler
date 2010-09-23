@@ -290,11 +290,10 @@ def problem34():
         
 def problem35():
     """How many circular primes are there below one million?"""
-    def is_circular_prime(n, start=0, digits_set=set([1, 3, 7, 9])):
-        digits = digits_from_num_fast(n)
-        if len(digits) > 1 and set(digits) - digits_set:
-            return False
+    def is_circular_prime(digits):
         return all(is_prime(num_from_digits(digits[rot:] + digits[:rot])) 
-            for rot in xrange(start, len(digits)))
-    candidates = takewhile(lambda n: n < 1e6, primes())
-    return ilen(n for n in candidates if is_circular_prime(n, start=1))
+            for rot in xrange(len(digits)))
+    one_digit_primes = (n for n in takewhile(lambda n: n < 10, primes()))
+    circular_primes = (num_from_digits(ds) for n in xrange(2, 7) 
+        for ds in cartesian_product([1, 3, 7, 9], repeat=n) if is_circular_prime(ds))
+    return ilen(chain(one_digit_primes, circular_primes))
