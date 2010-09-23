@@ -280,13 +280,10 @@ def problem34():
     # Cache digits from 0 to 9 to speed it up a little bit
     dfactorials = dict((x, factorial(x)) for x in xrange(10))
     
-    # Setting the upper-bound is the point of the problem. A first value is 
-    # ndigits*9! < 10^ndigits, where ndigits*9! is then the upper bound. 
-    # That makes 7*9! = 2540160.      
-    def _get_values():    
-        for n in range(2, 6+1):
-            for digits in combinations_with_replacement(range(10), n):
-                value = sum(dfactorials[digit] for digit in digits)
-                if sorted(digits_from_num(value)) == list(digits):
-                    yield value
-    return sum(_get_values())
+    # ndigits*9! < 10^ndigits -> upper_bound = ndigits*9!    
+    # That makes 7*9! = 2540160. That's quite a number, so it will be slow.
+    # A faster alternative: get combinations with repetition of [0!..9!] in 
+    # groups of N (1..7), and check the sum.
+    upper_bound = first(n*dfactorials[9] for n in count(1) if n*dfactorials[9] < 10**n)
+    return sum(x for x in xrange(3, upper_bound) 
+        if x == sum(dfactorials[d] for d in digits_from_num_fast(x)))
