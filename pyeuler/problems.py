@@ -297,7 +297,7 @@ def problem35():
             for rot in xrange(len(digits)))
     # We will use digits 1, 3, 7, 9 to generate candidates, so we
     # get the one-digit primes (2, 3, 5, 7) separately.
-    one_digit_primes = (n for n in takewhile(lambda n: n < 10, primes()))
+    one_digit_primes = takewhile(lambda n: n < 10, primes())
     other_circular_primes = (num_from_digits(ds) for n in xrange(2, 6+1) 
         for ds in cartesian_product([1, 3, 7, 9], repeat=n) if is_circular_prime(ds))
     return ilen(chain(one_digit_primes, other_circular_primes))
