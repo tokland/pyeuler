@@ -284,8 +284,8 @@ def problem34():
     # That makes 7*9! = 2540160. That's quite a number, so it will be slow.
     #
     # A faster alternative: get combinations with repetition of [0!..9!] in 
-    # groups of N (1..7), and check the sum. Note that the upper bound 
-    # condition is then harder to apply.
+    # groups of N (1..7), and check the sum value. Note that the upper bound 
+    # condition is in this case harder to apply.
     upper_bound = first(n*dfactorials[9] for n in count(1) if n*dfactorials[9] < 10**n)
     return sum(x for x in xrange(3, upper_bound) 
         if x == sum(dfactorials[d] for d in digits_from_num_fast(x)))
@@ -295,9 +295,17 @@ def problem35():
     def is_circular_prime(digits):
         return all(is_prime(num_from_digits(digits[rot:] + digits[:rot])) 
             for rot in xrange(len(digits)))
-    # We will use digits 1, 3, 7, 9 to generate candidates, so we
-    # get the one-digit primes (2, 3, 5, 7) separately.
+    # We will use only digits 1, 3, 7, 9 to generate candidates, so we will
+    # need to get the four one-digit primes separately.
     one_digit_primes = takewhile(lambda n: n < 10, primes())
     other_circular_primes = (num_from_digits(ds) for n in xrange(2, 6+1) 
         for ds in cartesian_product([1, 3, 7, 9], repeat=n) if is_circular_prime(ds))
     return ilen(chain(one_digit_primes, other_circular_primes))
+
+def problem36():
+    """Find the sum of all numbers, less than one million, which are 
+    palindromic in base 10 and base 2."""
+    # As a binary number starts with 1 and to be palindromic must end also 
+    # with a 1, it's sure to be an odd number (thus halving the numbers to check)
+    return sum(x for x in xrange(1, int(1e6), 2) 
+        if is_palindromic(x, 10) and is_palindromic(x, 2))
