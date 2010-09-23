@@ -287,3 +287,14 @@ def problem34():
     upper_bound = first(n*dfactorials[9] for n in count(1) if n*dfactorials[9] < 10**n)
     return sum(x for x in xrange(3, upper_bound) 
         if x == sum(dfactorials[d] for d in digits_from_num_fast(x)))
+        
+def problem35():
+    """How many circular primes are there below one million?"""
+    def is_circular_prime(n, start=0, digits_set=set([1, 3, 7, 9])):
+        digits = digits_from_num_fast(n)
+        if len(digits) > 1 and set(digits) - digits_set:
+            return False
+        return all(is_prime(num_from_digits(digits[rot:] + digits[:rot])) 
+            for rot in xrange(start, len(digits)))
+    candidates = takewhile(lambda n: n < 1e6, primes())
+    return ilen(n for n in candidates if is_circular_prime(n, start=1))
