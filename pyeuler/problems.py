@@ -19,9 +19,9 @@ def problem3():
 
 def problem4():
     """Find the largest palindrome made from the product of two 3-digit numbers."""
-    # A brute-force solution is a bit slow, let's try to simplify it:
+    # A brute-force solution is a bit slow, let's try to simplify it a little bit:
     # x*y = "abccda" = 100001a + 10010b + 1100c = 11 * (9091a + 910b + 100c)
-    # So at least one of them must be multiple of 11 (let's say it's x) 
+    # So at least one of them must be multiple of 11. 
     candidates = (x*y for x in xrange(110, 1000, 11) for y in xrange(x, 1000))
     return max(c for c in candidates if is_palindromic(c))
 
@@ -280,10 +280,12 @@ def problem34():
     # Cache digits from 0 to 9 to speed it up a little bit
     dfactorials = dict((x, factorial(x)) for x in xrange(10))
     
-    # ndigits*9! < 10^ndigits -> upper_bound = ndigits*9!    
+    # Upper bound: ndigits*9! < 10^ndigits -> upper_bound = ndigits*9!    
     # That makes 7*9! = 2540160. That's quite a number, so it will be slow.
+    #
     # A faster alternative: get combinations with repetition of [0!..9!] in 
-    # groups of N (1..7), and check the sum.
+    # groups of N (1..7), and check the sum. Note that the upper bound 
+    # condition is then harder to apply.
     upper_bound = first(n*dfactorials[9] for n in count(1) if n*dfactorials[9] < 10**n)
     return sum(x for x in xrange(3, upper_bound) 
         if x == sum(dfactorials[d] for d in digits_from_num_fast(x)))
@@ -293,7 +295,9 @@ def problem35():
     def is_circular_prime(digits):
         return all(is_prime(num_from_digits(digits[rot:] + digits[:rot])) 
             for rot in xrange(len(digits)))
+    # We will use digits 1, 3, 7, 9 to generate candidates, so we
+    # get the one-digit primes (2, 3, 5, 7) separately.
     one_digit_primes = (n for n in takewhile(lambda n: n < 10, primes()))
-    circular_primes = (num_from_digits(ds) for n in xrange(2, 7) 
+    other_circular_primes = (num_from_digits(ds) for n in xrange(2, 6+1) 
         for ds in cartesian_product([1, 3, 7, 9], repeat=n) if is_circular_prime(ds))
-    return ilen(chain(one_digit_primes, circular_primes))
+    return ilen(chain(one_digit_primes, other_circular_primes))
