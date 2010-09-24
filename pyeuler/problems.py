@@ -314,7 +314,6 @@ def problem36():
 def problem37():
     """Find the sum of the only eleven primes that are both truncatable from 
     left to right and right to left."""
-                yield x
     def truncatable_primes():
         for n in count(2):
             groups = ([[3,7]]+[[1,3,7,9]]*(n-2)+[[3,7]] if n > 2 else [[2,3,5,7]]*n)
