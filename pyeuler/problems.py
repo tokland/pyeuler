@@ -99,9 +99,9 @@ def problem15():
     # problem as how to put n D's in a 2*n array (a simple permutation),
     # and fill the holes with R's -> permutations(2n, n) = (2n)!/(n!n!) = (2n)!/2n! 
     #   
-    # More generically, this is also a permutation of a multiset:
+    # More generically, this is also a permutation of a multiset
     # which has ntotal!/(n1!*n2!*...*nk!) permutations
-    # In our problem the multiset is {n.D, n.R} -> (2n)!/(n!n!) = (2n)!/2n!
+    # In this problem the multiset is {n.D, n.R}, so (2n)!/(n!n!) = (2n)!/2n!
     n = 20
     return factorial(2*n) / (factorial(n)**2)
 
@@ -120,7 +120,9 @@ def problem18():
     # The note that go with the problem warns that number 67 presents the same
     # challenge but much bigger, where it won't be possible to solve it using 
     # simple brute force. But let's use brute-force here and we'll use the 
-    # head later. We test all routes from the top of the triangle.
+    # head later. We test all routes from the top of the triangle. We will find 
+    # out, however, that this brute-force solution is much more complicated to 
+    # implement (and to understand) than the elegant one.
     def get_numbers(rows):
         """Return groups of "columns" numbers, following all possible ways."""
         for moves in cartesian_product([0, +1], repeat=len(rows)-1):
@@ -293,19 +295,37 @@ def problem34():
 def problem35():
     """How many circular primes are there below one million?"""
     def is_circular_prime(digits):
-        return all(is_prime(num_from_digits(digits[rot:] + digits[:rot])) 
-            for rot in xrange(len(digits)))
-    # We will use only digits 1, 3, 7, 9 to generate candidates, so we will
-    # need to get the four one-digit primes separately.
-    one_digit_primes = takewhile(lambda n: n < 10, primes())
-    other_circular_primes = (num_from_digits(ds) for n in xrange(2, 6+1) 
+        return all(is_prime(num_from_digits(digits[r:] + digits[:r])) 
+            for r in xrange(len(digits)))
+    # We will use only digits (1, 3, 7, and 9) to generate candidates, so we 
+    # consider the four one-digit primes separately.
+    circular_primes = (num_from_digits(ds) for n in xrange(2, 6+1) 
         for ds in cartesian_product([1, 3, 7, 9], repeat=n) if is_circular_prime(ds))
-    return ilen(chain(one_digit_primes, other_circular_primes))
+    return ilen(chain([2, 3, 5, 7], circular_primes))
 
 def problem36():
     """Find the sum of all numbers, less than one million, which are 
     palindromic in base 10 and base 2."""
-    # As a binary number starts with 1 and to be palindromic must end also 
-    # with a 1, it's sure to be an odd number (thus halving the numbers to check)
+    # Trivial constraint: a binary number starts with 1, and to be palindromic it  
+    # must also end with 1, so it an odd number (thus halving the numbers to check)
     return sum(x for x in xrange(1, int(1e6), 2) 
-        if is_palindromic(x, 10) and is_palindromic(x, 2))
+        if is_palindromic(x, base=10) and is_palindromic(x, base=2))
+        
+def problem37():
+    """Find the sum of the only eleven primes that are both truncatable from 
+    left to right and right to left."""
+    def truncatable_primes_naive():
+        for x in primes(10):
+            digits = digits_from_num(x)                
+            if all(is_prime(num_from_digits(digits[n:])) and 
+                    is_prime(num_from_digits(digits[:-n])) for n in range(1, len(digits))):
+                yield x
+    def truncatable_primes():
+        for n in count(2):
+            groups = ([[3,7]]+[[1,3,7,9]]*(n-2)+[[3,7]] if n > 2 else [[2,3,5,7]]*n)
+            for digits in cartesian_product(*groups):
+                x = num_from_digits(digits)                
+                if is_prime(x) and all(is_prime(num_from_digits(digits[n:])) and 
+                        is_prime(num_from_digits(digits[:-n])) for n in range(1, len(digits))):
+                    yield x
+    return sum(take(11, truncatable_primes()))

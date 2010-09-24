@@ -1,10 +1,9 @@
 #!/usr/bin/python
 import operator
-from itertools import ifilter, ifilterfalse, islice, repeat, groupby
+from itertools import ifilter, islice, repeat, groupby
 from itertools import count, imap, takewhile, tee, izip
 from itertools import chain, starmap, cycle, dropwhile
-from itertools import combinations, permutations
-from itertools import product as cartesian_product
+from itertools import combinations, permutations, product as cartesian_product
 from math import sqrt, log, log10, ceil
 
 def take(n, iterable):
@@ -109,8 +108,20 @@ def identity(x):
     return x
 
 def occurrences(it, exchange=False):
-    """Return dictionary with occurrences from iterable (can be unsorted)"""
+    """Return dictionary with occurrences from iterable"""
     return reduce(lambda occur, x: dict(occur, **{x: occur.get(x, 0) + 1}), it, {})
+
+def ncombinations(n, k):
+    """Combinations of k elements from a group of n"""
+    return cartesian_product(xrange(n-k+1, n+1)) / factorial(k)
+
+def combinations_with_replacement(iterable, r):
+    """combinations_with_replacement('ABC', 2) --> AA AB AC BB BC CC"""
+    pool = tuple(iterable)
+    n = len(pool)
+    for indices in cartesian_product(range(n), repeat=r):
+        if sorted(indices) == list(indices):
+            yield tuple(pool[i] for i in indices)
 
 # Common maths functions
 
@@ -128,7 +139,7 @@ def is_integer(x, epsilon=1e-6):
     return (abs(round(x) - x) < epsilon)
 
 def divisors(n):
-    """Return all divisors of n: divisors(12) -> [1,2,3,6,12]."""
+    """Return all divisors of n: divisors(12) -> 1,2,3,6,12"""
     all_factors = [[f**p for p in range(fp+1)] for (f, fp) in factorize(n)]
     return (product(ns) for ns in cartesian_product(*all_factors))
 
@@ -169,7 +180,7 @@ def digits_from_num(num, base=10):
     def recursive(num, base, current):
         if num < base:
             return current+[num]
-        return recursive(num/base, base, current+[num%base])
+        return recursive(num/base, base, current + [num%base])
     return list(reversed(recursive(num, base, [])))
 
 def num_from_digits(digits, base=10):
@@ -219,23 +230,7 @@ def is_pentagonal(n):
 def is_hexagonal(n):
     """Return True if n is an hexagonal number"""
     return (n >= 1) and isinteger((1+sqrt(1+8*n))/4.0)
-
-def is_pythagorean((a, b, c)):
-    """Return True if a**2 = b**2 + c**2 (a, b, c must be integers)"""
-    return (a**2 == b**2 + c**2)
-
-def n_combinations(n, k):
-    """Combinations of k elements from a group of n"""
-    return cartesian_product(xrange(n-k+1, n+1)) / factorial(k)
-
-def combinations_with_replacement(iterable, r):
-    """combinations_with_replacement('ABC', 2) --> AA AB AC BB BC CC"""
-    pool = tuple(iterable)
-    n = len(pool)
-    for indices in cartesian_product(range(n), repeat=r):
-        if sorted(indices) == list(indices):
-            yield tuple(pool[i] for i in indices)
-            
+           
 def get_cardinal_name(num):
     """Get cardinal name for number (0 to 1 million)"""
     numbers = {
@@ -246,9 +241,6 @@ def get_cardinal_name(num):
         19: "nineteen", 20: "twenty", 30: "thirty", 40: "forty",
         50: "fifty", 60: "sixty", 70: "seventy", 80: "eighty", 90: "ninety",
       }
-    # This needs some refactoring
-    if not (0 <= num < 1e6):
-      raise ValueError, "value not supported: %s" % num
     def _get_tens(n):
       a, b = divmod(n, 10)
       return (numbers[n] if (n in numbers) else "%s-%s" % (numbers[10*a], numbers[b]))    
@@ -261,6 +253,10 @@ def get_cardinal_name(num):
         hundreds > 0 and tens and "and", 
         (not hundreds or tens > 0) and _get_tens(tens),
       ]))
+
+    # This needs some refactoring
+    if not (0 <= num < 1e6):
+      raise ValueError, "value not supported: %s" % num      
     thousands = (num / 1000) % 1000
     strings = compact([
       thousands and (_get_hundreds(thousands) + ["thousand"]),
@@ -274,11 +270,11 @@ def is_perfect(num):
 
 def number_of_digits(num, base=10):
     """Return number of digits of num (expressed in base 'base')"""
-    return int(log10(num)/log10(base)) + 1
+    return int(log(num)/log(base)) + 1
 
 def is_pandigital(digits, through=range(1, 10)):
     """Return True if digits form a pandigital number"""
-    return (list(sorted(digits)) == through)
+    return (sorted(digits) == through)
 
 # Decorators
 
