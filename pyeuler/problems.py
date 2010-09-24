@@ -316,7 +316,8 @@ def problem37():
     left to right and right to left."""
     def truncatable_primes():
         for n in count(2):
-            groups = ([[3,7]]+[[1,3,7,9]]*(n-2)+[[3,7]] if n > 2 else [[2,3,5,7]]*n)
+            groups = ([[3, 7]] + [[1, 3, 7, 9]] * (n-2) + [[3, 7]] if n > 2 else 
+                      [[2, 3, 5, 7]]*n)
             for digits in cartesian_product(*groups):
                 x = num_from_digits(digits)                
                 if is_prime(x) and all(is_prime(num_from_digits(digits[n:])) and 
