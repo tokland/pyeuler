@@ -306,8 +306,8 @@ def problem35():
 def problem36():
     """Find the sum of all numbers, less than one million, which are 
     palindromic in base 10 and base 2."""
-    # Trivial constraint: a binary number starts with 1, and to be palindromic it  
-    # must also end with 1, so it an odd number (thus halving the numbers to check)
+    # Apply a basic constraint: a binary number starts with 1, and to be 
+    # palindromic it must also end with 1, so candidates are odd numbers.
     return sum(x for x in xrange(1, int(1e6), 2) 
         if is_palindromic(x, base=10) and is_palindromic(x, base=2))
         
@@ -316,11 +316,10 @@ def problem37():
     left to right and right to left."""
     def truncatable_primes():
         for n in count(2):
-            groups = ([[3, 7]] + [[1, 3, 7, 9]] * (n-2) + [[3, 7]] if n > 2 else 
-                      [[2, 3, 5, 7]]*n)
-            for digits in cartesian_product(*groups):
-                x = num_from_digits(digits)                
-                if is_prime(x) and all(is_prime(num_from_digits(digits[n:])) and 
+            digit_groups = ([[2, 3, 5, 7]] + [[1, 3, 7, 9]]*(n-2) + [[3, 7]])
+            for digits in cartesian_product(*digit_groups):
+                x = num_from_digits(digits)
+                if is_prime(x) and all(is_prime(num_from_digits(digits[n:])) and
                         is_prime(num_from_digits(digits[:-n])) for n in range(1, len(digits))):
                     yield x
     return sum(take(11, truncatable_primes()))
