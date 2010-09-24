@@ -315,8 +315,8 @@ def problem37():
     """Find the sum of the only eleven primes that are both truncatable from 
     left to right and right to left."""
     def truncatable_primes():
-        for n in count(2):
-            digit_groups = ([[2, 3, 5, 7]] + [[1, 3, 7, 9]]*(n-2) + [[3, 7]])
+        for ndigits in count(2):
+            digit_groups = ([[2, 3, 5, 7]] + [[1, 3, 7, 9]]*(ndigits-2) + [[3, 7]])
             for digits in cartesian_product(*digit_groups):
                 x = num_from_digits(digits)
                 if is_prime(x) and all(is_prime(num_from_digits(digits[n:])) and
