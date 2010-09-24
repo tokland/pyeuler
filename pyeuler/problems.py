@@ -314,11 +314,6 @@ def problem36():
 def problem37():
     """Find the sum of the only eleven primes that are both truncatable from 
     left to right and right to left."""
-    def truncatable_primes_naive():
-        for x in primes(10):
-            digits = digits_from_num(x)                
-            if all(is_prime(num_from_digits(digits[n:])) and 
-                    is_prime(num_from_digits(digits[:-n])) for n in range(1, len(digits))):
                 yield x
     def truncatable_primes():
         for n in count(2):
