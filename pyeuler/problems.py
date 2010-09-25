@@ -23,7 +23,7 @@ def problem4():
     # x*y = "abccda" = 100001a + 10010b + 1100c = 11 * (9091a + 910b + 100c)
     # So at least one of them must be multiple of 11. 
     candidates = (x*y for x in xrange(110, 1000, 11) for y in xrange(x, 1000))
-    return max(c for c in candidates if is_palindromic(c))
+    return max(x for x in candidates if is_palindromic(x))
 
 def problem5():
     """What is the smallest positive number that is evenly divisible by all of 
@@ -316,11 +316,11 @@ def problem37():
     left to right and right to left."""
     def truncatable_primes():
         for ndigits in count(2):
-            digit_groups = ([[2, 3, 5, 7]] + [[1, 3, 7, 9]]*(ndigits-2) + [[3, 7]])
-            for digits in cartesian_product(*digit_groups):
-                x = num_from_digits(digits)
-                if is_prime(x) and all(is_prime(num_from_digits(digits[n:])) and
-                        is_prime(num_from_digits(digits[:-n])) for n in range(1, len(digits))):
+            digit_groups = [[2, 3, 5, 7]] + [[1, 3, 7, 9]]*(ndigits-2) + [[3, 7]]
+            for ds in cartesian_product(*digit_groups):
+                x = num_from_digits(ds)
+                if is_prime(x) and all(is_prime(num_from_digits(ds[n:])) and
+                        is_prime(num_from_digits(ds[:-n])) for n in range(1, len(ds))):
                     yield x
     return sum(take(11, truncatable_primes()))
 
@@ -333,4 +333,15 @@ def problem38():
         if len(candidate_digits) == 9 and is_pandigital(candidate_digits):
             return num_from_digits(candidate_digits) 
     # 987654321 is the maximum (potential) pandigital, so 9876 is a reasonable upper bound
-    return first(compact(pandigital_concatenated_product(n) for n in xrange(9876+1, 1, -1))) 
+    return first(compact(pandigital_concatenated_product(n) for n in xrange(9876+1, 0, -1)))
+
+def problem39():
+    """f p is the perimeter of a right angle triangle with integral length 
+    sides, {a,b,c}, for which value of p < 1000, is the number of solutions 
+    maximised?"""
+    pow2 = dict((x, x**2) for x in xrange(1000))
+    def get_sides(perimeter):
+        sides = ((perimeter-b-c, b, c) for b in xrange(1, perimeter/2 + 1)
+            for c in xrange(b, perimeter/2 + 1))
+        return ((b, c, a) for (a, b, c) in sides if pow2[a] == pow2[b] + pow2[c])
+    return max(xrange(120, 1000), key=compose(ilen, get_sides))
