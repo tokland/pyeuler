@@ -34,6 +34,24 @@ class TestToolset(unittest.TestCase):
         self.assertEqual(list(drop(0, [1,2,3,4])), [1,2,3,4])
         self.assertEqual(list(drop(1, [1,2,3,4])), [2,3,4])
         self.assertEqual(list(drop(10, [1,2,3,4])), [])
+
+    def test_ilen(self):
+        self.assertEqual(ilen([]), 0)
+        self.assertEqual(ilen([1, 2, 3]), 3)
+        self.assertEqual(ilen(iter([1, 2, 3])), 3)
+        
+    def test_product(self):
+        self.assertEqual(product([]), 1)
+        self.assertEqual(product([2, 3]), 6)
+
+    def test_flatten(self):
+        self.assertEqual(flatten([]), [])
+        self.assertEqual(flatten([[1,2,3], [4,5,6]]), [1,2,3,4,5,6])
+        self.assertEqual(flatten([[1,2,3], [4,[5,6]]]), [1,2,3,4,[5,6]])
+
+    def test_compact(self):
+        self.assertEqual(list(compact([0, 1, "", None, [], (), "hello"])), [1, "hello"])
+                
         
 if __name__ == '__main__':
     unittest.main()

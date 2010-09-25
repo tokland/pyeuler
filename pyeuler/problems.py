@@ -297,8 +297,8 @@ def problem35():
     def is_circular_prime(digits):
         return all(is_prime(num_from_digits(digits[r:] + digits[:r])) 
             for r in xrange(len(digits)))
-    # We will use only digits (1, 3, 7, and 9) to generate candidates, so we 
-    # consider the four one-digit primes separately.
+    # We will use only 4 digits (1, 3, 7, and 9) to generate candidates, so we 
+    # must consider the four one-digit primes separately.
     circular_primes = (num_from_digits(ds) for n in xrange(2, 6+1) 
         for ds in cartesian_product([1, 3, 7, 9], repeat=n) if is_circular_prime(ds))
     return ilen(chain([2, 3, 5, 7], circular_primes))
@@ -323,3 +323,16 @@ def problem37():
                         is_prime(num_from_digits(digits[:-n])) for n in range(1, len(digits))):
                     yield x
     return sum(take(11, truncatable_primes()))
+
+def problem38():
+    """What is the largest 1 to 9 pandigital 9-digit number that can be formed 
+    as the concatenated product of an integer with (1,2, ... , n) where n  1?"""
+    def concatenated_product(number):
+        """Return concatenated products of number (None if it cannot be build)."""
+        products = ireduce(operator.add, (digits_from_num(number*x) for x in count(1)))
+        candidate_digits = first(ds for ds in products if len(ds) >= 9)
+        if len(candidate_digits) == 9 and is_pandigital(candidate_digits):
+            return num_from_digits(candidate_digits) 
+    # 987654321 is the maximum pandigital we could build, and the only way to
+    # do is would be using base number 9876, so use it as an upper bound 
+    return max(concatenated_product(n) for n in xrange(2, 9876+1))

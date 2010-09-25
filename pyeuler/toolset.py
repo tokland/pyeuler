@@ -39,19 +39,12 @@ def product(nums):
     return reduce(operator.mul, nums, 1)
 
 def irange(start_or_end, optional_end=None):
-    """Return iterable from integer 'start' to 'end' (both included)."""
+    """Return iterable that counts from start to end (both included)."""
     if optional_end is None:
         start, end = 0, start_or_end
     else:
         start, end = start_or_end, optional_end
     return take(max(end - start + 1, 0), count(start))
-
-def groups(iterable, n, step):
-    """Make groups of 'n' elements from the iterable advancing
-    'step' elements on each iteration"""
-    itlist = tee(iterable, n)
-    onestepit = izip(*(starmap(drop, enumerate(itlist))))
-    return take_every(step, onestepit)
 
 def flatten(lstlsts):
     """Flatten a list of lists"""
@@ -60,6 +53,13 @@ def flatten(lstlsts):
 def compact(it):
     """Filter None values from iterator"""
     return ifilter(bool, it)
+
+def groups(iterable, n, step):
+    """Make groups of 'n' elements from the iterable advancing
+    'step' elements on each iteration"""
+    itlist = tee(iterable, n)
+    onestepit = izip(*(starmap(drop, enumerate(itlist))))
+    return take_every(step, onestepit)
 
 def compose(f, g):
     """Compose two functions -> compose(f, g)(x) -> f(g(x))"""
@@ -75,7 +75,7 @@ def iterate(func, arg):
         arg = func(arg)                
      
 def ireduce(func, iterable, init=None):
-    """Like reduce() but using iterators (also known also scanl)"""
+    """Like reduce() but using iterators (a.k.a scanl)"""
     # not functional
     if init is None:
         iterable = iter(iterable)
@@ -89,7 +89,7 @@ def ireduce(func, iterable, init=None):
 
 def unique(it):
     """Return items from iterator (order preserved)"""
-    # not functional 
+    # not functional, but fast
     seen = set()
     for x in it:
         if x not in seen:
@@ -161,16 +161,6 @@ def primes(start=2):
     """Yield prime numbers from 'start'"""
     return ifilter(is_prime, count(start))
 
-def primes2():
-    """Yield all prime nubers (generator version)"""
-    ints = count(2)
-    while True:
-        prime = ints.next()
-        yield prime
-        def filtpred(v, p=prime):
-            return ((v % p) != 0)
-        ints = ifilter(filtpred, ints)
-
 def digits_from_num_fast(num):
     """Get digits from num in base 10 (fast implementation)"""
     return map(int, str(num))
@@ -185,7 +175,7 @@ def digits_from_num(num, base=10):
 
 def num_from_digits(digits, base=10):
     """Get digits from num in base 'base'"""
-    return sum(x*(base**n) for (n, x) in enumerate(reversed(digits)))
+    return sum(x*(base**n) for (n, x) in enumerate(reversed(digits)) if x)
 
 def is_palindromic(num, base=10):
     """Check if 'num' in base 'base' is a palindrome, that's it, if it can be
