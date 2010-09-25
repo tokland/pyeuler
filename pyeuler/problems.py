@@ -326,13 +326,12 @@ def problem37():
 
 def problem38():
     """What is the largest 1 to 9 pandigital 9-digit number that can be formed 
-    as the concatenated product of an integer with (1,2, ... , n) where n  1?"""
+    as the concatenated product of an integer with (1,2, ... , n) where n > 1?"""
     def concatenated_product(number):
-        """Return concatenated products of number (None if it cannot be build)."""
+        """Return concatenated products of number (None if cannot be build)."""
         products = ireduce(operator.add, (digits_from_num(number*x) for x in count(1)))
         candidate_digits = first(ds for ds in products if len(ds) >= 9)
         if len(candidate_digits) == 9 and is_pandigital(candidate_digits):
             return num_from_digits(candidate_digits) 
-    # 987654321 is the maximum pandigital we could build, and the only way to
-    # do is would be using base number 9876, so use it as an upper bound 
+    # 987654321 is the maximum pandigital, so 9876 seems a reasonable upper bound 
     return max(concatenated_product(n) for n in xrange(2, 9876+1))
