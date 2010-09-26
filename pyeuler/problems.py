@@ -363,9 +363,9 @@ def problem40():
 
 def problem41():
     """What is the largest n-digit pandigital prime that exists?"""
-    # Disibility by 3 rule: if the sum of digits is divisible by 3, so is the number
-    # 1 + ... +9=45 (15*3) and 1 + ... + 8=36 (12*3), so we can skip 8 and 9-digit nums
-    # We want the biggest number, so we start at 7-digit numbers and countdown
-    nums = (num_from_digits(digits) for ndigits in xrange(7, 1, -1) 
+    # Use the disibility by 3 rule to filter some candidates: if the sum of 
+    # digits is divisible by 3, so is the number (and then it can't be prime). 
+    maxdigits = first(x for x in range(9, 1, -1) if sum(range(1, x+1)) % 3)
+    candidates = (num_from_digits(digits) for ndigits in xrange(maxdigits, 1, -1) 
         for digits in permutations(range(ndigits, 0, -1), ndigits))
-    return first(x for x in nums if is_prime(x))
+    return first(x for x in candidates if is_prime(x))
