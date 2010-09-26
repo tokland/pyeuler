@@ -352,10 +352,18 @@ def problem40():
     value of the following expression: d1 x d10 x d100 x d1000 x d10000 x 
     d100000 x d1000000"""
     def count_digits():
-        """Like itertools.count, but returns digits (starting at 1)."""
-        return flatten(cartesian_product(*([range(1, 10)] + [range(10)]*n)) 
-            for n in count(0))
-    # We could probably get a formula for dn, but brute-force is fast enough
+        """Like itertools.count, but returns digits instead."""
+        for nd in count(1):
+            for digits in cartesian_product(*([range(1, 10)] + [range(10)]*(nd-1))):
+                yield digits
+    # We could get a formula for dn, but brute-force is fast enough
     indexes = set([1, 10, 100, 1000, 10000, 100000, 1000000])
     decimals = (d for (idx, d) in enumerate(flatten(count_digits()), 1) if idx in indexes)
     return product(take(len(indexes), decimals))
+
+def problem41():
+    """What is the largest n-digit pandigital prime that exists?"""
+    # Disibility by 3: If the sum of digits is divisible by 3, so is the number
+    # 1+..+9=45 (15*3) and 1+..+8=36 (12*3), so we can skip 8 and 9-digit nums
+    digits = (ds for n in xrange(1, 7+1) for ds in permutations(range(1, n+1), n))
+    return max(x for x in imap(num_from_digits, digits) if is_prime(x))
