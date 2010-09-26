@@ -336,12 +336,26 @@ def problem38():
     return first(compact(pandigital_concatenated_product(n) for n in xrange(9876+1, 0, -1)))
 
 def problem39():
-    """f p is the perimeter of a right angle triangle with integral length 
-    sides, {a,b,c}, for which value of p < 1000, is the number of solutions 
-    maximised?"""
-    pow2 = dict((x, x**2) for x in xrange(1000))
-    def get_sides(perimeter):
+    """if p is the perimeter of a right angle triangle with integral length 
+    sides, {a,b,c}, for which value of p < 1000 is the number of solutions 
+    maximized?"""
+    def get_sides_for_perimeter(perimeter):
         sides = ((perimeter-b-c, b, c) for b in xrange(1, perimeter/2 + 1)
             for c in xrange(b, perimeter/2 + 1))
-        return ((b, c, a) for (a, b, c) in sides if pow2[a] == pow2[b] + pow2[c])
-    return max(xrange(120, 1000), key=compose(ilen, get_sides))
+        return ((a, b, c) for (a, b, c) in sides if a**2 == b**2 + c**2)
+    # Brute-force, check pythagorian triplets for a better solution
+    return max(xrange(120, 1000), key=compose(ilen, get_sides_for_perimeter))
+
+def problem40():
+    """An irrational decimal fraction is created by concatenating the positive 
+    integers: If dn represents the nth digit of the fractional part, find the 
+    value of the following expression: d1 x d10 x d100 x d1000 x d10000 x 
+    d100000 x d1000000"""
+    def count_digits():
+        """Like itertools.count, but returns digits (starting at 1)."""
+        return flatten(cartesian_product(*([range(1, 10)] + [range(10)]*n)) 
+            for n in count(0))
+    # We could probably get a formula for dn, but brute-force is fast enough
+    indexes = set([1, 10, 100, 1000, 10000, 100000, 1000000])
+    decimals = (d for (idx, d) in enumerate(flatten(count_digits()), 1) if idx in indexes)
+    return product(take(len(indexes), decimals))

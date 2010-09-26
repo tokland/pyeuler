@@ -48,7 +48,7 @@ def irange(start_or_end, optional_end=None):
 
 def flatten(lstlsts):
     """Flatten a list of lists"""
-    return list(chain.from_iterable(lstlsts))
+    return (b for a in lstlsts for b in a)
 
 def compact(it):
     """Filter None values from iterator"""
