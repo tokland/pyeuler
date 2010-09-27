@@ -385,12 +385,21 @@ def problem43():
     """The number, 1406357289, is a 0 to 9 pandigital number because it is made 
     up of each of the digits 0 to 9 in some order, but it also has a rather 
     interesting sub-string divisibility property. Let d1 be the 1st digit, d2 
-    be the 2nd digit, and so on. In this way, we note the following: 
-    d2d3d4=406 is divisible by 2, d3d4d5=063 is divisible by 3, 
-    d4d5d6=635 is divisible by 5, d5d6d7=357 is divisible by 7,
-    d6d7d8=572 is divisible by 11, d7d8d9=728 is divisible by 13,
-    d8d9d10=289 is divisible by 17. Find the sum of all 0 to 9 pandigital 
-    numbers with this property."""
-    divisors = take(7, primes())
-    return list(divisors)
-    
+    be the 2nd digit, and so on. In this way, we note the following: d2d3d4=406 
+    is divisible by 2, d3d4d5=063 is divisible by 3, d4d5d6=635 is divisible 
+    by 5, d5d6d7=357 is divisible by 7, d6d7d8=572 is divisible by 11, 
+    d7d8d9=728 is divisible by 13, d8d9d10=289 is divisible by 17. 
+    Find the sum of all 0 to 9 pandigital numbers with this property."""    
+    def get_numbers(divisors, candidates, result=()):
+        if divisors:        
+            for candidate in candidates:
+                new_result = candidate + result
+                if num_from_digits(new_result[:3]) % divisors[0] == 0:
+                    new_candidates = [(x,) for x in set(range(10)) - set(new_result)]
+                    for res in get_numbers(divisors[1:], new_candidates, new_result):
+                        yield res
+        else:
+            d1 = candidates[0]
+            if d1: # A pandigital cannot have a leading zero, skip those 
+                yield num_from_digits(d1 + result)
+    return sum(get_numbers([17, 13, 11, 7, 5, 3, 2], permutations(range(10), 3)))
