@@ -352,7 +352,7 @@ def problem40():
     value of the following expression: d1 x d10 x d100 x d1000 x d10000 x 
     d100000 x d1000000"""
     def count_digits():
-        """Like itertools.count, but returns digits instead."""
+        """Like itertools.count, but returns digits instead. Starts at 1"""
         for nd in count(1):
             for digits in cartesian_product(*([range(1, 10)] + [range(10)]*(nd-1))):
                 yield digits
@@ -364,8 +364,19 @@ def problem40():
 def problem41():
     """What is the largest n-digit pandigital prime that exists?"""
     # Use the disibility by 3 rule to filter some candidates: if the sum of 
-    # digits is divisible by 3, so is the number (and then it can't be prime). 
+    # digits is divisible by 3, so is the number (then it can't be prime). 
     maxdigits = first(x for x in range(9, 1, -1) if sum(range(1, x+1)) % 3)
-    candidates = (num_from_digits(digits) for ndigits in xrange(maxdigits, 1, -1) 
+    candidates = (num_from_digits(digits) for ndigits in range(maxdigits, 1, -1) 
         for digits in permutations(range(ndigits, 0, -1), ndigits))
     return first(x for x in candidates if is_prime(x))
+
+def problem42():
+    """Using words.txt (right click and 'Save Link/Target As...'), a 16K text 
+    file containing nearly two-thousand common English words, how many are 
+    triangle words?"""
+    # tn = 1/2*n*(n+1) -> n = (-1 + sqrt(1 + 8*t)) / 2
+    def is_triangle(x):
+        return is_integer((-1 + sqrt(1 + 8*x)) / 2)
+    dictionary = dict((c, n) for (n, c) in enumerate(string.ascii_uppercase, 1))
+    words = data.openfile("words.txt").read().replace('"', '').split(",")
+    return ilen(word for word in words if is_triangle(sum(dictionary[c] for c in word)))
