@@ -415,6 +415,15 @@ def problem44():
 def problem45():
     """It can be verified that T285 = P165 = H143 = 40755. Find the next 
     triangle number that is also pentagonal and hexagonal."""
-    # Hexagonal numbers are also triangle number, so we need to check only whether is pentagonal
-    candidates = (hexagonal(x) for x in count(143+1))
-    return first(x for x in candidates if is_pentagonal(x))
+    # Hexagonal numbers are also triangle number, so we check only whether it's pentagonal
+    hexagonal_candidates = (hexagonal(x) for x in count(143+1))
+    return first(x for x in hexagonal_candidates if is_pentagonal(x))
+
+def problem46():
+    """What is the smallest odd composite that cannot be written as the sum 
+    of a prime and twice a square?"""
+    def satisfies_conjecture(x):
+        cprimes = takewhile(lambda p: p <  x, primes(memoized=True))
+        return any(is_integer(sqrt((x - prime) / 2)) for prime in cprimes)
+    odd_composites = (x for x in take_every(2, count(3)) if not is_prime(x))
+    return first(x for x in odd_composites if not satisfies_conjecture(x))

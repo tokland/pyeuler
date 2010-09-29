@@ -157,9 +157,10 @@ def is_prime(n):
         return False
     return True
 
-def primes(start=2):
+def primes(start=2, memoized=False):
     """Yield prime numbers from 'start'"""
-    return ifilter(is_prime, count(start))
+    is_prime_fun = (memoize(is_prime) if memoized else is_prime)
+    return ifilter(is_prime_fun, count(start))
 
 def digits_from_num_fast(num):
     """Get digits from num in base 10 (fast implementation)"""
