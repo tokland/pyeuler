@@ -157,7 +157,7 @@ def is_prime(n):
         return False
     return True
 
-def primes(start=2, memoized=False):
+def get_primes(start=2, memoized=False):
     """Yield prime numbers from 'start'"""
     is_prime_fun = (memoize(is_prime) if memoized else is_prime)
     return ifilter(is_prime_fun, count(start))
@@ -307,15 +307,17 @@ class tail_recursive(object):
             self.firstcall = True
             return result
         
-class persistent_iterable:
-    """Memoize iterable so it looks like it's persistent (like a list)."""    
+class persistent(object):
     def __init__(self, it):
-        self.cache = []
-        self.it = iter(it)
+        self.it = it
+        
+    def __getitem__(self, x):
+        self.it, temp = tee(self.it)
+        if type(x) is slice:
+            return list(islice(self.it, x.start, x.stop, x.step))
+        else:
+            return islice(temp, x, x+1).next()
         
     def __iter__(self):
-        for x in self.cache:
-            yield x
-        for x in self.it:
-            self.cache.append(x)        
-            yield x
+        self.it, temp = tee(self.it)
+        return temp

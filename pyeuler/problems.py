@@ -39,7 +39,7 @@ def problem6():
 
 def problem7():
     """What is the 10001st prime number?."""
-    return index(10001-1, primes())
+    return index(10001-1, get_primes())
   
 def problem8():
     """Find the greatest product of five consecutive digits in the 1000-digit number"""
@@ -54,7 +54,7 @@ def problem9():
   
 def problem10():
     """Find the sum of all the primes below two million."""
-    return sum(takewhile(lambda x: x<2e6, primes()))
+    return sum(takewhile(lambda x: x<2e6, get_primes()))
 
 def problem11():
     """What is the greatest product of four adjacent numbers in any direction 
@@ -314,7 +314,7 @@ def problem36():
 def problem37():
     """Find the sum of the only eleven primes that are both truncatable from 
     left to right and right to left."""
-    def truncatable_primes():
+    def truncatable_get_primes():
         for ndigits in count(2):
             digit_groups = [[2, 3, 5, 7]] + [[1, 3, 7, 9]]*(ndigits-2) + [[3, 7]]
             for ds in cartesian_product(*digit_groups):
@@ -322,7 +322,7 @@ def problem37():
                 if is_prime(x) and all(is_prime(num_from_digits(ds[n:])) and
                         is_prime(num_from_digits(ds[:-n])) for n in range(1, len(ds))):
                     yield x
-    return sum(take(11, truncatable_primes()))
+    return sum(take(11, truncatable_get_primes()))
 
 def problem38():
     """What is the largest 1 to 9 pandigital 9-digit number that can be formed 
@@ -391,10 +391,10 @@ def problem43():
     def get_numbers(divisors, candidates, acc_result=()):
         if divisors:
             for candidate in candidates:
-                new_result = candidate + acc_result
-                if num_from_digits(new_result[:3]) % divisors[0] == 0:
-                    new_candidates = [(x,) for x in set(range(10)) - set(new_result)]
-                    for res in get_numbers(divisors[1:], new_candidates, new_result):
+                new_acc_result = candidate + acc_result
+                if num_from_digits(new_acc_result[:3]) % divisors[0] == 0:
+                    new_candidates = [(x,) for x in set(range(10)) - set(new_acc_result)]
+                    for res in get_numbers(divisors[1:], new_candidates, new_acc_result):
                         yield res
         else:
             d1 = candidates[0]
@@ -422,9 +422,9 @@ def problem45():
 def problem46():
     """What is the smallest odd composite that cannot be written as the sum 
     of a prime and twice a square?"""
-    persistent_primes = persistent_iterable(primes())
+    pprimes = persistent(get_primes())
     def satisfies_conjecture(x):
-        candidates = takewhile(lambda p: p <  x, persistent_primes)
-        return any(is_integer(sqrt((x - prime) / 2)) for prime in candidates)
+        primes = takewhile(lambda p: p <  x, pprimes)
+        return any(is_integer(sqrt((x - prime) / 2)) for prime in primes)
     odd_composites = (x for x in take_every(2, count(3)) if not is_prime(x))
     return first(x for x in odd_composites if not satisfies_conjecture(x))
