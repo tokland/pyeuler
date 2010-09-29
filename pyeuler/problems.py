@@ -72,7 +72,7 @@ def problem11():
 def problem12():
     """What is the value of the first triangle number to have over five 
     hundred divisors?"""
-    triangle_numbers = (triangle_number(n) for n in count(1))
+    triangle_numbers = (triangle(n) for n in count(1))
     return first(tn for tn in triangle_numbers if ilen(divisors(tn)) > 500)
 
 def problem13():
@@ -374,9 +374,6 @@ def problem42():
     """Using words.txt (right click and 'Save Link/Target As...'), a 16K text 
     file containing nearly two-thousand common English words, how many are 
     triangle words?"""
-    # tn = 1/2*n*(n+1) -> n^2 + n - 2t = 0 -> n = (-1 + sqrt(1 + 8*tn)) / 2
-    def is_triangle(x):
-        return is_integer((-1 + sqrt(1 + 8*x)) / 2)
     dictionary = dict((c, n) for (n, c) in enumerate(string.ascii_uppercase, 1))
     words = data.openfile("words.txt").read().replace('"', '').split(",")
     return ilen(word for word in words if is_triangle(sum(dictionary[c] for c in word)))
@@ -409,12 +406,15 @@ def problem44():
     """Find the pair of pentagonal numbers, Pj and Pk, for which their sum 
     and difference is pentagonal and D = |Pk - Pj| is minimised; what is the 
     value of D?"""
-    def pentagonal(n):
-        return n*(3*n - 1)/2
-    def is_pentagonal(n):
-        return (n >= 1) and is_integer((1+sqrt(1+24*n))/6.0)
     pairs = ((p1, p2) for (n1, p1) in ((n, pentagonal(n)) for n in count(0))
         for p2 in (pentagonal(n) for n in xrange(1, n1))
         if is_pentagonal(p1-p2) and is_pentagonal(p1+p2))        
     p1, p2 = first(pairs)
     return p1 - p2
+
+def problem45():
+    """It can be verified that T285 = P165 = H143 = 40755. Find the next 
+    triangle number that is also pentagonal and hexagonal."""
+    # Hexagonal numbers are also triangle number, so we need to check only whether is pentagonal
+    candidates = (hexagonal(x) for x in count(143+1))
+    return first(x for x in candidates if is_pentagonal(x))

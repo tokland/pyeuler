@@ -201,26 +201,22 @@ def least_common_multiple(a, b):
     """Return least common multiples of a and b"""
     return (a * b) / greatest_common_divisor(a, b)
 
-def triangle_number(x):
+def triangle(x):
     """The nth triangle number is defined as the sum of [1,n] values."""
     return (x*(x+1))/2
 
-def pentagonal_number(n):
-    """Nth pentagonal number: 1, 5, 12, 22, 35, ..."""
-    return n*(3*n-1)/2
+def is_triangle(x):
+    return is_integer((-1 + sqrt(1 + 8*x)) / 2)
 
-def hexagonal_number(n):
-    """Nth hexagonal number: 1, 6, 15, 28, 45, ..."""
-    return n*(2*n-1)
+def pentagonal(n):
+    return n*(3*n - 1)/2
 
 def is_pentagonal(n):
-    """Return True if n is a pentagonal number"""
-    return (n >= 1) and isinteger((1+sqrt(1+24*n))/6.0)
+    return (n >= 1) and is_integer((1+sqrt(1+24*n))/6.0)
 
-def is_hexagonal(n):
-    """Return True if n is an hexagonal number"""
-    return (n >= 1) and isinteger((1+sqrt(1+8*n))/4.0)
-           
+def hexagonal(n):
+    return n*(2*n - 1)
+       
 def get_cardinal_name(num):
     """Get cardinal name for number (0 to 1 million)"""
     numbers = {
