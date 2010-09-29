@@ -319,10 +319,3 @@ class persistent_iterable:
         for x in self.it:
             self.cache.append(x)        
             yield x
-            
-    def __getitem__(self, index):
-        if index < len(self.cache):
-            return self.cache[index]
-        for x in islice(self.it, index - len(self.cache) + 1):
-            self.cache.append(x)
-        return x
