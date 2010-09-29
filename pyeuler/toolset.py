@@ -306,3 +306,23 @@ class tail_recursive(object):
         else: # reset and exit
             self.firstcall = True
             return result
+        
+class persistent_iterable:
+    """Memoize iterable so it looks like it's persistent (like a list)."""    
+    def __init__(self, it):
+        self.cache = []
+        self.it = iter(it)
+        
+    def __iter__(self):
+        for x in self.cache:
+            yield x
+        for x in self.it:
+            self.cache.append(x)        
+            yield x
+            
+    def __getitem__(self, index):
+        if index < len(self.cache):
+            return self.cache[index]
+        for x in islice(self.it, index - len(self.cache) + 1):
+            self.cache.append(x)
+        return x

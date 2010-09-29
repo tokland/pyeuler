@@ -422,8 +422,15 @@ def problem45():
 def problem46():
     """What is the smallest odd composite that cannot be written as the sum 
     of a prime and twice a square?"""
+    persistent_primes = persistent_iterable(primes())
     def satisfies_conjecture(x):
-        cprimes = takewhile(lambda p: p <  x, primes(memoized=True))
-        return any(is_integer(sqrt((x - prime) / 2)) for prime in cprimes)
+        candidates = takewhile(lambda p: p <  x, persistent_primes)
+        return any(is_integer(sqrt((x - prime) / 2)) for prime in candidates)
     odd_composites = (x for x in take_every(2, count(3)) if not is_prime(x))
     return first(x for x in odd_composites if not satisfies_conjecture(x))
+
+x = persistent_iterable(count(0))
+print x[10]
+print 50 in x
+print x[100]
+print x[0]
