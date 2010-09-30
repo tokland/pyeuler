@@ -74,9 +74,14 @@ def iterate(func, arg):
         yield arg
         arg = func(arg)                
 
-def accsum(it, start=0):
-    """Yield accumulated sums: accsum(count(1)) -> 1,3,6,10,..."""
-    return drop(1, ireduce(operator.add, it, start))
+def accsum(it):
+    """Yield accumulated sums of iterable: accsum(count(1)) -> 1,3,6,10,..."""
+    return drop(1, ireduce(operator.add, it, 0))
+
+def tails(seq):
+    """Get tails of a sequence: tails([1,2,3]) -> [1,2,3], [2,3], [3], []."""
+    for idx in xrange(len(seq)+1):
+        yield seq[idx:]
      
 def ireduce(func, iterable, init=None):
     """Like reduce() but using iterators (a.k.a scanl)"""

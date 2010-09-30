@@ -35,10 +35,10 @@ def run_problem(number, function, solutions=None):
         solution = solutions[number]
         status = ("ok" if result == solution else 
             "FAIL: expected solution is %s" % solution)
-        print "%d: %s (%s) in %0.4f seconds" % (number, result, status, elapsed)
+        print "%d: %s (%s) in %0.3f seconds" % (number, result, status, elapsed)
         return (result == solution)
     else:
-        print "%d: %s in %0.4f seconds" % (number, result, elapsed)
+        print "%d: %s in %0.3f seconds" % (number, result, elapsed)
 
 def parse_solutions(lines, format="^(?P<num>\d+)\.\s+(?P<solution>\S+)$"):
     """Yield pairs (problem_number, solution) parsed from lines."""
@@ -71,7 +71,7 @@ def main(args):
         sorted(problem_functions.iteritems()) if not tosolve or num in tosolve]
     elapsed = time.time() - itime
     ps = "problem" + ("" if len(statuses) == 1 else "s")    
-    print "--- %d %s run (%d failed) in %0.4f seconds" % \
+    print "--- %d %s run (%d failed) in %0.3f seconds" % \
       (len(statuses), ps, statuses.count(False), elapsed) 
     return (0 if all(statuses) else 1)
 

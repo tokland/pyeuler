@@ -462,6 +462,7 @@ def problem49():
 def problem50():
     """Which prime, below one-million, can be written as the sum of the most 
     consecutive primes?"""
+    # Get primes that can be terms of the sum
     pprimes = persistent(get_primes())
-    primes = [p for p, acc in takewhile(lambda (p, acc): acc<1e6, izip(pprimes, accsum(pprimes)))]
-    return max(acc for idx in xrange(len(primes)) for acc in accsum(primes[idx:]) if is_prime(acc))
+    primes = [p for (p, acc) in takewhile(lambda (p, acc): acc<1e6, izip(pprimes, accsum(pprimes)))]
+    return max(sum(primes) for primes in tails(primes) if is_prime(sum(primes)))
