@@ -73,6 +73,10 @@ def iterate(func, arg):
     while 1:
         yield arg
         arg = func(arg)                
+
+def accsum(it, start=0):
+    """Yield accumulated sums: accsum(count(1)) -> 1,3,6,10,..."""
+    return drop(1, ireduce(operator.add, it, start))
      
 def ireduce(func, iterable, init=None):
     """Like reduce() but using iterators (a.k.a scanl)"""

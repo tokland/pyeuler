@@ -458,3 +458,10 @@ def problem49():
     solution = first((x1, x2, x3) for (x1, x2, x3) in candidates 
         if x2 in primes and x3 in primes and has_same_digits(x1, x2, x3))
     return num_from_digits(flatten(digits_from_num(x) for x in solution))
+
+def problem50():
+    """Which prime, below one-million, can be written as the sum of the most 
+    consecutive primes?"""
+    pprimes = persistent(get_primes())
+    primes = [p for p, acc in takewhile(lambda (p, acc): acc<1e6, izip(pprimes, accsum(pprimes)))]
+    return max(acc for idx in xrange(len(primes)) for acc in accsum(primes[idx:]) if is_prime(acc))
