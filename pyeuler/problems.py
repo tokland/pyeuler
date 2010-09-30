@@ -449,18 +449,17 @@ def problem49():
     3-digit primes, exhibiting this property, but there is one other 4-digit 
     increasing sequence. What 12-digit number do you form by concatenating the 
     three terms in this sequence?"""
-    def have_same_digits(*numbers):
-        sets = (set(digits_from_num(n)) for n in numbers)
-        return ilen(first(groupby(sets))[1]) == len(numbers)
-    def get_triples(primes):
-        for x1 in primes:
+    def ds(n):
+        return set(digits_from_num(n))
+    def get_triplets(primes):
+        for x1 in sorted(primes):
             for d in xrange(2, (10000-x1)/2 + 1):
                 x2 = x1 + d
                 x3 = x1 + 2*d
-                if x2 in primes and x3 in primes and have_same_digits(x1, x2, x3):
+                if x2 in primes and x3 in primes and ds(x1) == ds(x2) == ds(x3):
                     yield (x1, x2, x3)
-    primes = set(takewhile(lambda x: x < 10000, get_primes(1000))) - set([1487])
-    return num_from_digits(flatten(digits_from_num(x) for x in first(get_triplets(primes))))
+    primes = set(takewhile(lambda x: x < 10000, get_primes(1000)))
+    return num_from_digits(flatten(digits_from_num(x) for x in index(1, get_triplets(primes))))
 
 def problem50():
     """Which prime, below one-million, can be written as the sum of the most 
