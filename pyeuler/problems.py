@@ -433,11 +433,28 @@ def problem46():
 def problem47():
     """Find the first four consecutive integers to have four distinct primes 
     factors. What is the first of these numbers?"""
-    grouped_by_factors = groupby(count(1), lambda x: len(set(prime_factors(x))) == 4)
-    matching_groups = (list(group) for (match, group) in grouped_by_factors if match)
+    grouped_by_4factors = groupby(count(1), lambda x: len(set(prime_factors(x))) == 4)
+    matching_groups = (list(group) for (match, group) in grouped_by_4factors if match)
     return first(grouplst[0] for grouplst in matching_groups if len(grouplst) == 4)
 
 def problem48():
     """Find the last ten digits of the series, 1^1 + 2^2 + 3^3 + ... + 1000^1000"""
-    value = sum(x**x for x in xrange(1, 1000+1))
-    return int(str(value)[-10:])
+    return sum(x**x for x in xrange(1, 1000+1)) % 10**10
+
+def problem49():
+    """The arithmetic sequence, 1487, 4817, 8147, in which each of the terms 
+    increases by 3330, is unusual in two ways: (i) each of the three terms are
+    prime, and, (ii) each of the 4-digit numbers are permutations of one 
+    another. There are no arithmetic sequences made up of three 1-, 2-, or 
+    3-digit primes, exhibiting this property, but there is one other 4-digit 
+    increasing sequence. What 12-digit number do you form by concatenating the 
+    three terms in this sequence?"""
+    def has_same_digits(*numbers):
+        sets = (set(digits_from_num(n)) for n in numbers)
+        return ilen(first(groupby(sets))[1]) == len(numbers)
+    primes = set(takewhile(lambda x: x < 10000, get_primes(1000)))
+    candidates = ((x1, x1 + d, x1 + 2*d) for x1 in sorted(primes) if x1 != 1487 
+        for d in xrange(2, (10000-x1)/2 + 1))
+    solution = first((x1, x2, x3) for (x1, x2, x3) in candidates 
+        if x2 in primes and x3 in primes and has_same_digits(x1, x2, x3))
+    return num_from_digits(flatten(digits_from_num(x) for x in solution))

@@ -176,7 +176,7 @@ def digits_from_num(num, base=10):
 
 def num_from_digits(digits, base=10):
     """Get digits from num in base 'base'"""
-    return sum(x*(base**n) for (n, x) in enumerate(reversed(digits)) if x)
+    return sum(x*(base**n) for (n, x) in enumerate(reversed(list(digits))) if x)
 
 def is_palindromic(num, base=10):
     """Check if 'num' in base 'base' is a palindrome, that's it, if it can be
