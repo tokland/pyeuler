@@ -449,20 +449,22 @@ def problem49():
     3-digit primes, exhibiting this property, but there is one other 4-digit 
     increasing sequence. What 12-digit number do you form by concatenating the 
     three terms in this sequence?"""
-    def has_same_digits(*numbers):
+    def have_same_digits(*numbers):
         sets = (set(digits_from_num(n)) for n in numbers)
         return ilen(first(groupby(sets))[1]) == len(numbers)
-    primes = set(takewhile(lambda x: x < 10000, get_primes(1000)))
-    candidates = ((x1, x1 + d, x1 + 2*d) for x1 in sorted(primes) if x1 != 1487 
-        for d in xrange(2, (10000-x1)/2 + 1))
-    solution = first((x1, x2, x3) for (x1, x2, x3) in candidates 
-        if x2 in primes and x3 in primes and has_same_digits(x1, x2, x3))
-    return num_from_digits(flatten(digits_from_num(x) for x in solution))
+    primes = set(takewhile(lambda x: x < 10000, get_primes(1000))) - set([1487])
+    def solutions():
+        for x1 in primes:
+            for d in xrange(2, (10000-x1)/2 + 1):
+                x2 = x1 + d
+                x3 = x1 + 2*d
+                if x2 in primes and x3 in primes and have_same_digits(x1, x2, x3):
+                    yield (x1, x2, x3)
+    return num_from_digits(flatten(digits_from_num(x) for x in first(solutions())))
 
 def problem50():
     """Which prime, below one-million, can be written as the sum of the most 
     consecutive primes?"""
-    # Get primes that can be terms of the sum
     pprimes = persistent(get_primes())
     primes = [p for (p, acc) in takewhile(lambda (p, acc): acc<1e6, izip(pprimes, accsum(pprimes)))]
     return max(sum(primes) for primes in tails(primes) if is_prime(sum(primes)))
