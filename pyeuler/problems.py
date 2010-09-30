@@ -415,16 +415,24 @@ def problem44():
 def problem45():
     """It can be verified that T285 = P165 = H143 = 40755. Find the next 
     triangle number that is also pentagonal and hexagonal."""
-    # Hexagonal numbers are also triangle number, so we check only whether it's pentagonal
+    # Hexagonal numbers are also triangle, so we'll check only whether they are pentagonal
     hexagonal_candidates = (hexagonal(x) for x in count(143+1))
     return first(x for x in hexagonal_candidates if is_pentagonal(x))
 
 def problem46():
     """What is the smallest odd composite that cannot be written as the sum 
     of a prime and twice a square?"""
-    pprimes = persistent(get_primes())
+    # primes will be iterated over and over and incremently, so better use a cached generator 
+    primes = persistent(get_primes())
     def satisfies_conjecture(x):
-        primes = takewhile(lambda p: p <  x, pprimes)
-        return any(is_integer(sqrt((x - prime) / 2)) for prime in primes)
+        test_primes = takewhile(lambda p: p <  x, primes)
+        return any(is_integer(sqrt((x - prime) / 2)) for prime in test_primes)
     odd_composites = (x for x in take_every(2, count(3)) if not is_prime(x))
     return first(x for x in odd_composites if not satisfies_conjecture(x))
+
+def problem47():
+    """Find the first four consecutive integers to have four distinct primes 
+    factors. What is the first of these numbers?"""
+    grouped_by_factors = groupby(count(1), lambda x: len(set(prime_factors(x))) == 4)
+    matching_groups = (list(group) for (match, group) in grouped_by_factors if match)
+    return first(grouplst[0] for grouplst in matching_groups if len(grouplst) == 4)

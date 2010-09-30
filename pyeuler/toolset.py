@@ -314,7 +314,7 @@ class persistent(object):
     def __getitem__(self, x):
         self.it, temp = tee(self.it)
         if type(x) is slice:
-            return list(islice(self.it, x.start, x.stop, x.step))
+            return list(islice(temp, x.start, x.stop, x.step))
         else:
             return islice(temp, x, x+1).next()
         
