@@ -453,7 +453,7 @@ def problem49():
         return set(digits_from_num(n))
     def get_triplets(primes):
         for x1 in sorted(primes):
-            for d in xrange(2, (10000-x1)/2 + 1):
+            for d in xrange(2, (10000-x1)/2 + 1, 2):
                 x2 = x1 + d
                 x3 = x1 + 2*d
                 if x2 in primes and x3 in primes and ds(x1) == ds(x2) == ds(x3):
