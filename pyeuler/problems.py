@@ -436,3 +436,8 @@ def problem47():
     grouped_by_factors = groupby(count(1), lambda x: len(set(prime_factors(x))) == 4)
     matching_groups = (list(group) for (match, group) in grouped_by_factors if match)
     return first(grouplst[0] for grouplst in matching_groups if len(grouplst) == 4)
+
+def problem48():
+    """Find the last ten digits of the series, 1^1 + 2^2 + 3^3 + ... + 1000^1000"""
+    value = sum(x**x for x in xrange(1, 1000+1))
+    return int(str(value)[-10:])
