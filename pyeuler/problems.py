@@ -459,11 +459,21 @@ def problem49():
                 if x2 in primes and x3 in primes and ds(x1) == ds(x2) == ds(x3):
                     yield (x1, x2, x3)
     primes = set(takewhile(lambda x: x < 10000, get_primes(1000)))
-    return num_from_digits(flatten(digits_from_num(x) for x in index(1, get_triplets(primes))))
+    solution = index(1, get_triplets(primes))
+    return num_from_digits(flatten(digits_from_num(x) for x in solution))
 
 def problem50():
     """Which prime, below one-million, can be written as the sum of the most 
     consecutive primes?"""
-    pprimes = persistent(get_primes())
-    primes = [p for (p, acc) in takewhile(lambda (p, acc): acc<1e6, izip(pprimes, accsum(pprimes)))]
-    return max(sum(primes) for primes in tails(primes) if is_prime(sum(primes)))
+    def get_max_length(primes, n, max_length=0, acc=None):
+        if sum(take(max_length, drop(n, primes))) >= 1e6:
+            return acc
+        accsums = takewhile(lambda acc: acc<1e6, accsum(drop(n, primes)))
+        new_max_length, new_acc = max((idx, acc) for (idx, acc) in 
+            enumerate(accsums) if is_prime(acc))
+        if new_max_length > max_length:
+            return get_max_length(primes, n+1, new_max_length, new_acc)
+        else:
+            return get_max_length(primes, n+1, max_length, acc)
+    primes = persistent(get_primes())
+    return get_max_length(primes, 0)
